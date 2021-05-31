@@ -11,10 +11,14 @@ class CPlayer : public CCharacter{
 private:
 	int mJump;
 	int mHp;	//体力
+	int mFireRate;
 	float mSpeedX;	//左右加速度
 	float mSpeedY;	//上下加速度
 	float mSpeedZ;	//前後加速度
-
+	float mBeforMouseX;
+	float mBeforMouseY;
+	float mMouseMoveX;
+	float mMouseMoveY;
 
 public:
 	CColliderLine mLine; //線分コライダ

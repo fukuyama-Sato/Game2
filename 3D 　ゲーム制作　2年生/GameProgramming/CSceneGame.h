@@ -10,6 +10,11 @@
 ゲームのシーン
 */
 class CSceneGame : public CScene {
+private:
+	int camX;
+	int camY;
+	int camZ;
+
 public:
 	//モデルクラスのインスタンス作成
 	CModel mModel;

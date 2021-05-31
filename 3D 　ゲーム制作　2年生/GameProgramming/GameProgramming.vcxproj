@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CInput.cpp" />
     <ClCompile Include="CSphere.cpp" />
     <ClCompile Include="CBillBoard.cpp" />
     <ClCompile Include="CBullet.cpp" />
@@ -95,7 +96,6 @@
     <ClCompile Include="CCollisionManager.cpp" />
     <ClCompile Include="CEffect.cpp" />
     <ClCompile Include="CEnemy.cpp" />
-    <ClCompile Include="CEnemy2.cpp" />
     <ClCompile Include="CKey.cpp" />
     <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMatrix.cpp" />
@@ -115,6 +115,7 @@
     <ClCompile Include="Update.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CInput.h" />
     <ClInclude Include="CSphere.h" />
     <ClInclude Include="CBillBoard.h" />
     <ClInclude Include="CBullet.h" />
@@ -127,7 +128,6 @@
     <ClInclude Include="CCollisionManager.h" />
     <ClInclude Include="CEffect.h" />
     <ClInclude Include="CEnemy.h" />
-    <ClInclude Include="CEnemy2.h" />
     <ClInclude Include="CKey.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CMatrix.h" />

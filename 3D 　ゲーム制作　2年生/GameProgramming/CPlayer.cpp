@@ -5,14 +5,18 @@
 #include"CCollisionManager.h"
 #include"CText.h"
 #include"CUtil.h"
+#include"CEnemy.h"
+#include"CInput.h"
 
-#define GLAVITY -0.05 //重力
-#define JUMPPOWER 2	//ジャンプ力
+#define GLAVITY -0.02 //重力
+#define JUMPPOWER 1	//ジャンプ力
 #define VELOCITY 0.8	//移動力
 #define SPEEDREMIT 5	//速度制限
 #define SUBERI 2	//滑り易さ
+#define FIRERATE 6	//攻撃の連射速度
 
 CText mText;
+CEnemy Enemy;
 
 CPlayer::CPlayer()
 : mLine(this, &mMatrix, CVector(0.0f, 0.0f, -14.0f), CVector(0.0f, 0.0f, 17.0f))
@@ -26,10 +30,31 @@ CPlayer::CPlayer()
 	mSpeedY = NULL;
 	mSpeedZ = NULL;
 	mJump = true;
+	mFireRate = 0;
+
+	mBeforMouseX = 0;
+	mBeforMouseY = 0;
+	mMouseMoveX = 0;
+	mMouseMoveY = 0;
+
 }
 
 //更新処理
 void CPlayer::Update(){
+  //マウス設定
+	float mMousePosX, mMousePosY;	//マウスカーソル座標取得用
+	//マウスカーソル座標の取得
+	CInput::GetMousePos(&mMousePosX, &mMousePosY);
+
+	//ゲーム画面中心からの座標へ変換
+	mMousePosX -= 400;
+	mMousePosY = 300 - mMousePosY;
+
+	if (CKey::Push('C')){
+		//マウス座標コンソール出力
+		printf("%d,%d\n", mMousePosX, mMousePosY);
+	}
+
 	//スペースキーでジャンプ
 	if (CKey::Once(VK_SPACE) && mJump == true){
 		mSpeedY += JUMPPOWER;
@@ -60,34 +85,31 @@ void CPlayer::Update(){
 		mSpeedZ += VELOCITY + 0.2;
 	}
 
-	//ここからマウスの操作
-	//視点操作
-	if (CKey::Push(VK_UP) && mRotation.mX > -90){
-		mRotation.mX -= 2;
-	}
-	if (CKey::Push(VK_DOWN) && mRotation.mX < 86){
-		mRotation.mX += 2;
-	}
-	if (CKey::Push(VK_RIGHT)){
-		mRotation.mY -= 2;
-	}
-	if (CKey::Push(VK_LEFT)){
-		mRotation.mY += 2;
-	}
 
-	//Jキーで弾を発射
-	if (CKey::Push('J')){
+
+	//ここからマウスによる操作
+	mMouseMoveX = mMousePosX - mBeforMouseX;
+	mMouseMoveY = mMousePosY - mBeforMouseY;
+	//視点操作
+	//上下
+	//if (mRotation.mX < 90 && mRotation.mX > -90){
+		mRotation.mX -= mMouseMoveY;
+	//}
+	mRotation.mY -= mMouseMoveX;
+
+	//左クリックで弾を発射
+	if (CKey::Push(VK_LBUTTON) && mFireRate-- < 0){
 		CBullet *bullet = new CBullet();
 		bullet->Set(0.1f, 0.8f);
-		bullet->mPosition = CVector(-5.0f, -1.0f, 10.0f) * mMatrix;
+		bullet->mPosition = CVector(-2.0f, -1.0f, 10.0f) * mMatrix;
 		bullet->mRotation = mRotation;
 		bullet->Update();
+		mFireRate = FIRERATE;
 	}
 	//ここまでマウスの操作
 
 	//位置の移動
 	mPosition = CVector(mSpeedX,0.0f,mSpeedZ) * mMatrix;
-
 
 	//疑似着地
 	if (mPosition.mY < 1){
@@ -111,33 +133,39 @@ void CPlayer::Update(){
 		}
 	}
 
+	mBeforMouseX = mMousePosX;
+	mBeforMouseY = mMousePosY;
 }
 
 void CPlayer::Collision(CCollider *m, CCollider *o){
 	//自身のコライダタイプの判定
-	//switch (m->mType){
-	//case CCollider::ELINE: //線分コライダ
-		//if (o->mTag == CCollider::EBLOCK){
-		//	CVector adjust; //	調整用ベクトル
-		//	//三角形と線分の衝突判定
-		//	CCollider::CollisionTriangleLine(o, m, &adjust);
-		//	//位置の更新(mPosition + adjust)
-		//	mPosition = mPosition - adjust * -1;
-		//	CTransform::Update();
-		//}
-		//break;
+	switch (m->mType){
+	case CCollider::ELINE: //線分コライダ
+		if (o->mTag == CCollider::EBLOCK){
+			CVector adjust; //	調整用ベクトル
+			//三角形と線分の衝突判定
+			CCollider::CollisionTriangleLine(o, m, &adjust);
+			//位置の更新(mPosition + adjust)
+			mPosition = mPosition - adjust * -1;
+			CTransform::Update();
+		}
+		break;
 
-		////相手のコライダが三角コライダの時
-		//if (o->mType == CCollider::ETRIANGLE){
-		//	CVector adjust; //	調整用ベクトル
-		//	//三角形と線分の衝突判定
-		//	CCollider::CollisionTriangleLine(o, m, &adjust);
-		//	//位置の更新(mPosition + adjust)
-		//	mPosition = mPosition - adjust * -1;
-		//	CTransform::Update();
-		//}
-		//break;
-	//}
+		//相手のコライダが三角コライダの時
+		if (o->mType == CCollider::ETRIANGLE){
+			CVector adjust; //	調整用ベクトル
+			//三角形と線分の衝突判定
+			CCollider::CollisionTriangleLine(o, m, &adjust);
+			//位置の更新(mPosition + adjust)
+			mPosition = mPosition - adjust * -1;
+			CTransform::Update();
+		}
+		break;
+	//case CCollider::ESPHERE:
+	//	if (o->mTag == CCharacter::EBULLETENEMY){
+
+	//	}
+	}
 }
 
 void CPlayer::Render(){
@@ -147,7 +175,7 @@ void CPlayer::Render(){
 	//2Dの描画開始
 	CUtil::Start2D(-400, 400, -300, 300);
 	//描画色の設定
-	glColor4f(0.1f, 0.1f, 0.1f, 0.7f);
+	glColor4f(0.1f, 0.8f, 0.1f, 1.0f);
 	//文字列編集エリアの作成
 	char buf[64];
 
@@ -184,6 +212,16 @@ void CPlayer::Render(){
 	sprintf(buf, "VZ:%f", mSpeedZ);
 	//文字列の描画
 	mText.DrawString(buf, -300, 100, 8, 16);
+
+	//文字列の設定
+	sprintf(buf, "EHP:%d", Enemy.mHp);
+	//文字列の描画
+	mText.DrawString(buf, -300, 0, 8, 16);
+
+	//文字列の設定
+	sprintf(buf, "+");
+	//文字列の描画
+	mText.DrawString(buf, 0, 20, 20, 20);
 
 
 	//2D描画終了

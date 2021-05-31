@@ -8,6 +8,11 @@
 /*エネミークラス
 　キャラクタクラスを継承*/
 class CEnemy : public CCharacter{
+private:
+	int mSpeedX;
+	int mSpeedY;
+	int mSpeedZ;
+
 public:
 
 	int mHp;	//ヒットポイント
@@ -19,7 +24,6 @@ public:
 	CCollider mCollider;
 	//サーチ用コライダ 
 	CCollider mColSearch1;
-	CCollider mColSearch2;
 	//プレイヤーのポインタ
 	CCharacter *mpPlayer;
 	//コンストラクタ
@@ -29,6 +33,11 @@ public:
 		const CVector& scale);
 	//更新処理
 	void Update();
+
+	//void NearMove();	//近距離用動作
+	//void MediumMove();	//中距離用動作
+	//void DistantMove();	//遠距離用動作
+
 	//衝突処理
 	//Collider(コライダ1,コライダ2)
 	void Collision(CCollider *m, CCollider *o);

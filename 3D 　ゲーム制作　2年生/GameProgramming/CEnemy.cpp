@@ -6,7 +6,7 @@
 
 #define OBJ "f16.obj"	//モデルのファイル
 #define MTL "f16.mtl"	//モデルのマテリアルファイル
-#define HP 3	//耐久値
+#define HP 300	//耐久値
 #define VELOCITY 0.11f	//速度
 
 CModel CEnemy::mModel;	//モデルデータ作成
@@ -15,7 +15,6 @@ CModel CEnemy::mModel;	//モデルデータ作成
 CEnemy::CEnemy()
 :mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 0.4f)
 , mColSearch1(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
-, mColSearch2(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 10.0f)
 , mpPlayer(0)
 , mHp(HP)
 {
@@ -25,8 +24,7 @@ CEnemy::CEnemy()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	mColSearch1.mTag = CCollider::ESEARCH1;
-	mColSearch2.mTag = CCollider::ESEARCH2;
+	mColSearch1.mTag = CCollider::ESEARCH;
 	//目標地点の設定
 	mPoint = mPosition + CVector(0.0f, 0.0f, 100.0f) * mMatrixRotate;
 }
@@ -47,19 +45,7 @@ CEnemy::CEnemy(const CVector& position, const CVector& rotation, const CVector& 
 }
 
 void CEnemy::Update(){
-	//HPが0以下の時 撃破
-	if (mHp <= 0){
-		mHp--;
-		//15フレームごとにエフェクト
-		if (mHp % 15 == 0){
-			//エフェクト生成
-			new CEffect(mPosition, 1.0f, 1.0f, "exp.tga", 4, 4, 2);
-		}
-		//下降させる
-		mPosition.mY -= 0.03f;
-		CTransform::Update();
-		return;
-	}
+
 	//およそ3秒毎に目標地点を更新
 	int r = rand() % 180;	//rand()は整数の乱数を返す
 	//%180 は 180で割った余りを求める
@@ -129,14 +115,13 @@ void CEnemy::Update(){
 //Collision(コライダ1,コライダ2)
 void CEnemy::Collision(CCollider *m, CCollider *o){
 	//相手がサーチの時は戻る
-	if (o->mTag == CCollider::ESEARCH1){
+	if (o->mTag == CCollider::ESEARCH){
 		return;
 	}
 	//自分がサーチ用の時
-	if (m->mTag == CCollider::ESEARCH1){
+	if (m->mTag == CCollider::ESEARCH){
 		//相手が球コライダ
 		if (o->mType == CCollider::ESPHERE){
-			//相手がプレイヤー
 			if (o->mpParent->mTag == EPLAYER){
 				//衝突中
 				if (CCollider::Collision(m, o)){
@@ -161,10 +146,6 @@ void CEnemy::Collision(CCollider *m, CCollider *o){
 		CVector adjust; //調整値
 		//三角コライダと球コライダの判定
 		if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
-			//撃破で地面に衝突すると無効
-			if (mHp <= 0){
-				mEnabled = false;
-			}
 			//衝突しない位置まで戻す
 			mPosition = mPosition + adjust;
 		}
@@ -177,9 +158,7 @@ void CEnemy::TaskCollision(){
 	//コライダの優先度変更
 	mCollider.ChangePriority();
 	mColSearch1.ChangePriority();
-	mColSearch2.ChangePriority();
 	//衝突処理 実行
 	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mColSearch1, COLLISIONRANGE);
-	CCollisionManager::Get()->Collision(&mColSearch2, COLLISIONRANGE);
 }

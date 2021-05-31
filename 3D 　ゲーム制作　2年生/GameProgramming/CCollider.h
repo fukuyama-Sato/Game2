@@ -22,8 +22,6 @@ public:
 		EBODY,
 		EBLOCK,	//áŠQ•¨
 		ESEARCH,
-		ESEARCH1,	//‹ß‹——£
-		ESEARCH2	//’†‹——£
 	};
 	ETag mTag;	//ƒRƒ‰ƒCƒ_Ž¯•Ê
 

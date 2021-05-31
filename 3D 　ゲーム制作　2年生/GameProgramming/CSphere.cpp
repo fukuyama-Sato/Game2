@@ -17,9 +17,7 @@ CSphere::CSphere(CModel *model, CVector position, CVector rotation, CVector scal
 	CTaskManager::Get()->Add(this);
 }
 
-//更新処理
 void CSphere::Update(){
-	//行列を更新
 	CTransform::Update();
 }
 
@@ -30,11 +28,11 @@ void CSphere::Collision(CCollider *m, CCollider *o){
 	if (o->mTag == CCollider::ESEARCH){
 		return;
 	}
+
 	//自分がサーチ用の時
 	if (m->mTag == CCollider::ESEARCH){
 		//相手が球コライダ
 		if (o->mType == CCollider::ESPHERE){
-			//相手がプレイヤー
 			if (o->mpParent->mTag == EPLAYER){
 				//衝突中
 				if (CCollider::Collision(m, o)){
@@ -45,6 +43,7 @@ void CSphere::Collision(CCollider *m, CCollider *o){
 		}
 		return;
 	}
+
 	//相手のコライダタイプの判定
 	switch (o->mType){
 	case CCollider::ESPHERE: //球コライダ

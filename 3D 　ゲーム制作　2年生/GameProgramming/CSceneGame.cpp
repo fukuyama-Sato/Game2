@@ -45,21 +45,21 @@ void CSceneGame::Init() {
 	mPlayer.mPosition = CVector(0.0f, 15.0f, -3.0f) * mBackGroundMatrix;
 	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f);
 
-	/*new CEnemy(CVector(5.0f, 1.0f, -10.0f) * mBackGroundMatrix,
-		CVector(), CVector(0.1f, 0.1f, 0.1f));*/
+	new CEnemy(CVector(5.0f, 1.0f, -100.0f) * mBackGroundMatrix,
+		CVector(), CVector(0.1f, 0.1f, 0.1f));
 
 	new CSphere(&mModelSphere,
 		CVector(50.0f, 0.0f, -3.0f) * mBackGroundMatrix,
 		CVector(),
 		CVector(10.0f, 10.0f, 10.0f));
 
-	//ビルボード作成
-	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
-
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列は無し
 	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGlound);
 
+	camX = 0.0f;
+	camY = 2.0f;
+	camZ = 0.0f;
 }
 
 void CSceneGame::Update() {
@@ -83,11 +83,12 @@ void CSceneGame::Update() {
 	CVector e, c, u;	//視点,注視点,上方向
 
 	//視点を求める
-	e = CVector(0.0f, 3.0f, -10.0) * mPlayer.mMatrix;
+	e = CVector(camX, camY, camZ) * mPlayer.mMatrix;
 	//注視点を求める
-	c = CVector(0.0f, 0.0f, 20.0) * mPlayer.mMatrix;
+	c = CVector(0.0f, 1.0f, 20.0f) * mPlayer.mMatrix;
 	//上方向を求める
 	u = CVector(0, 1, 0);
+
 
 	//カメラの設定
 	//gluLookAt(e.mX, e.mY, e.mZ, c.mX, c.mY, c.mZ, u.mX, u.mY, u.mZ);

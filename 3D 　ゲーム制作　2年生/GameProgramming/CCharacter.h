@@ -17,7 +17,7 @@ public:
 		EENEMY,
 		EBULLETPLAYER,
 		EBULLETENEMY,
-		EBLOCK
+		EBLOCK,
 	};
 	ETag mTag;
 

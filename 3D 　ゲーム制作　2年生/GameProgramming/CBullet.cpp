@@ -24,7 +24,7 @@ void CBullet::Update(){
 	if (mLife-- > 0){
 		CTransform::Update();
 		//位置更新
-		mPosition = CVector(0.0f, 0.0f, 5.0f) * mMatrix;
+		mPosition = CVector(0.0f, 0.0f, 4.0f) * mMatrix;
 	}
 	else{
 		//無効にする
@@ -51,7 +51,7 @@ void CBullet::Collision(CCollider *m, CCollider *o){
 	if (o->mTag == CCharacter::EPLAYER){
 		return;
 	}
-	//コライダのmとyが衝突しているか判定
+	//コライダのmとoが衝突しているか判定
 	if (CCollider::Collision(m, o)){
 		//衝突したら無効
 		mEnabled = false;

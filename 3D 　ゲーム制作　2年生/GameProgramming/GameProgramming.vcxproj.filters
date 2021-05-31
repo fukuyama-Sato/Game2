@@ -108,13 +108,13 @@
     <ClCompile Include="CUtil.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="CEnemy2.cpp">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClCompile>
     <ClCompile Include="CSphere.cpp">
       <Filter>ソース ファイル\出現物</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="CInput.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,11 +206,11 @@
     <ClInclude Include="CUtil.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="CEnemy2.h">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClInclude>
     <ClInclude Include="CSphere.h">
       <Filter>ソース ファイル\出現物</Filter>
+    </ClInclude>
+    <ClInclude Include="CInput.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
