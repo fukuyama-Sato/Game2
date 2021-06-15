@@ -11,13 +11,16 @@ class CPlayer : public CCharacter{
 private:
 	int mJump;
 	int mHp;	//体力
-	int mFireRate;
+	int mFireRate;	//連射速度
+	int mBulletTortalNum;
+	int mBulletNum;
+	int mReloadTime;
 	float mSpeedX;	//左右加速度
 	float mSpeedY;	//上下加速度
 	float mSpeedZ;	//前後加速度
-	float mBeforMouseX;
+	float mBeforMouseX;	//直前マウス位置
 	float mBeforMouseY;
-	float mMouseMoveX;
+	float mMouseMoveX;	//マウス移動量
 	float mMouseMoveY;
 
 public:

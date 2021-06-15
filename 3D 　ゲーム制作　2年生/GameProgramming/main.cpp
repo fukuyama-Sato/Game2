@@ -87,6 +87,7 @@ int main(void)
 		glfwTerminate();
 		return -1;
 	}
+
 	//ウィンドウポインタ変数の設定
 	CInput::Init(window);
 
@@ -139,6 +140,13 @@ int main(void)
 
 		/* Poll for and process events */
 		glfwPollEvents();
+
+		//
+		int state = glfwGetKey(window,GLFW_KEY_ESCAPE);
+		if (state == GLFW_PRESS){
+			//ウィンドウ破棄
+			glfwDestroyWindow(window);
+		}
 	}
 
 	glfwTerminate();

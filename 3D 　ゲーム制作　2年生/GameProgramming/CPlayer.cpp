@@ -8,12 +8,14 @@
 #include"CEnemy.h"
 #include"CInput.h"
 
-#define GLAVITY -0.02 //重力
+#define GLAVITY -0.02f //重力
 #define JUMPPOWER 1	//ジャンプ力
-#define VELOCITY 0.8	//移動力
-#define SPEEDREMIT 5	//速度制限
+#define VELOCITY 0.2f	//移動力
+#define SPEEDREMIT 2	//速度制限
 #define SUBERI 2	//滑り易さ
 #define FIRERATE 6	//攻撃の連射速度
+#define BULLETNUMBER 50	//装弾数
+#define RELOAD 150
 
 CText mText;
 CEnemy Enemy;
@@ -22,7 +24,7 @@ CPlayer::CPlayer()
 : mLine(this, &mMatrix, CVector(0.0f, 0.0f, -14.0f), CVector(0.0f, 0.0f, 17.0f))
 , mLine2(this, &mMatrix, CVector(0.0f, 3.0f, -8.0f), CVector(0.0f, -2.0f, -8.0f))
 , mLine3(this, &mMatrix, CVector(9.0f, 0.0f, -8.0f), CVector(-9.0f, 0.0f, -8.0f))
-, mCollider(this, &mMatrix, CVector(0.0f,0.0f,0.0f),0.5f)
+, mCollider(this, &mMatrix, CVector(0.0f,0.0f,0.0f),1.5f)
 {
 	mText.LoadTexture("FontWhite.tga", 1, 64);
 	mTag = EPLAYER; //タグの設定
@@ -31,12 +33,16 @@ CPlayer::CPlayer()
 	mSpeedZ = NULL;
 	mJump = true;
 	mFireRate = 0;
+	mHp = 50;
 
 	mBeforMouseX = 0;
 	mBeforMouseY = 0;
 	mMouseMoveX = 0;
 	mMouseMoveY = 0;
 
+	mBulletTortalNum = 600;
+	mBulletNum = BULLETNUMBER;
+	mReloadTime = 0;
 }
 
 //更新処理
@@ -93,19 +99,34 @@ void CPlayer::Update(){
 	//視点操作
 	//上下
 	//if (mRotation.mX < 90 && mRotation.mX > -90){
-		mRotation.mX -= mMouseMoveY;
+	//if (mMousePosX > -400 && mMousePosX < 400 && mMousePosY > -300 && mMousePosY < 300){
+		mRotation.mX -= mMouseMoveY/1.5;
+		mRotation.mY -= mMouseMoveX/1.5;
 	//}
-	mRotation.mY -= mMouseMoveX;
+	//}
+	
 
 	//左クリックで弾を発射
-	if (CKey::Push(VK_LBUTTON) && mFireRate-- < 0){
-		CBullet *bullet = new CBullet();
-		bullet->Set(0.1f, 0.8f);
-		bullet->mPosition = CVector(-2.0f, -1.0f, 10.0f) * mMatrix;
-		bullet->mRotation = mRotation;
-		bullet->Update();
-		mFireRate = FIRERATE;
-	}
+		if (mBulletTortalNum > 0){
+			if (CKey::Push(VK_LBUTTON) && mFireRate-- < 0 && mBulletNum > 0 && mReloadTime < 0){
+				CBullet *bullet = new CBullet();
+				bullet->mTag = CCharacter::EBULLETPLAYER;
+				bullet->Set(1.1f, 2.8f);
+				bullet->mPosition = CVector(-2.0f, -1.0f, 10.0f) * mMatrix;
+				bullet->mRotation = mRotation;
+				bullet->Update();
+				mBulletNum--;
+				mFireRate = FIRERATE;
+			}
+			//リロード
+			if (CKey::Once('R') || mBulletNum <= 0){
+				mReloadTime = RELOAD;
+			}
+			if (mReloadTime-- > 0){
+					mBulletTortalNum -= BULLETNUMBER - mBulletNum;
+					mBulletNum = BULLETNUMBER;
+			}
+		}
 	//ここまでマウスの操作
 
 	//位置の移動
@@ -141,7 +162,7 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 	//自身のコライダタイプの判定
 	switch (m->mType){
 	case CCollider::ELINE: //線分コライダ
-		if (o->mTag == CCollider::EBLOCK){
+		if (o->mType == CCollider::EBLOCK){
 			CVector adjust; //	調整用ベクトル
 			//三角形と線分の衝突判定
 			CCollider::CollisionTriangleLine(o, m, &adjust);
@@ -161,10 +182,6 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			CTransform::Update();
 		}
 		break;
-	//case CCollider::ESPHERE:
-	//	if (o->mTag == CCharacter::EBULLETENEMY){
-
-	//	}
 	}
 }
 
@@ -214,6 +231,11 @@ void CPlayer::Render(){
 	mText.DrawString(buf, -300, 100, 8, 16);
 
 	//文字列の設定
+	sprintf(buf, "HP:%d", mHp);
+	//文字列の描画
+	mText.DrawString(buf, -300, 50, 8, 16);
+
+	//文字列の設定
 	sprintf(buf, "EHP:%d", Enemy.mHp);
 	//文字列の描画
 	mText.DrawString(buf, -300, 0, 8, 16);
@@ -222,6 +244,16 @@ void CPlayer::Render(){
 	sprintf(buf, "+");
 	//文字列の描画
 	mText.DrawString(buf, 0, 20, 20, 20);
+
+	//文字列の設定
+	sprintf(buf, "BULLET:%d",mBulletNum);
+	//文字列の描画
+	mText.DrawString(buf, -300, -100, 8, 16);
+
+	//文字列の設定
+	sprintf(buf, "%d", mBulletTortalNum);
+	//文字列の描画
+	mText.DrawString(buf, -300, -170, 8, 16);
 
 
 	//2D描画終了

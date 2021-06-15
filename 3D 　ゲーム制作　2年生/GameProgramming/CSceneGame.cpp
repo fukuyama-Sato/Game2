@@ -28,7 +28,6 @@ CColliderMesh mColliderMesh;
 CMatrix mBackGroundMatrix;
 
 void CSceneGame::Init() {
-	//mEye = CVector(1.0f, 2.0f, 3.0f);
 
 	//モデルファイルの入力
 	mModel.Load("f14.obj", "f14.mtl");
@@ -41,12 +40,12 @@ void CSceneGame::Init() {
 	mBackGroundMatrix.Translate(0.0f, 0.0f, -500.0f);
 
 	mPlayer.mpModel = &mModel;
-	mPlayer.mScale = CVector(0.1f, 0.1f, 0.1f);
+	mPlayer.mScale = CVector(0.3f, 0.3f, 0.3f);
 	mPlayer.mPosition = CVector(0.0f, 15.0f, -3.0f) * mBackGroundMatrix;
 	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f);
 
 	new CEnemy(CVector(5.0f, 1.0f, -100.0f) * mBackGroundMatrix,
-		CVector(), CVector(0.1f, 0.1f, 0.1f));
+		CVector(), CVector(1.0f, 1.0f, 1.0f));
 
 	new CSphere(&mModelSphere,
 		CVector(50.0f, 0.0f, -3.0f) * mBackGroundMatrix,
@@ -57,9 +56,10 @@ void CSceneGame::Init() {
 	//親インスタンスと親行列は無し
 	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGlound);
 
-	camX = 0.0f;
-	camY = 2.0f;
-	camZ = 0.0f;
+	//カメラ位置
+	camX = -5.0f;
+	camY = 3.0f;
+	camZ = -5.0f;
 }
 
 void CSceneGame::Update() {
@@ -85,7 +85,7 @@ void CSceneGame::Update() {
 	//視点を求める
 	e = CVector(camX, camY, camZ) * mPlayer.mMatrix;
 	//注視点を求める
-	c = CVector(0.0f, 1.0f, 20.0f) * mPlayer.mMatrix;
+	c = CVector(-5.0f, 0.0f, 50.0f) * mPlayer.mMatrix;
 	//上方向を求める
 	u = CVector(0, 1, 0);
 

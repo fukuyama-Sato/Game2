@@ -4,7 +4,7 @@
 //デフォルトコンストラクタ
 CBullet::CBullet()
 : mLife(50)
-,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 0.1f)
+,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 1.1f)
 {}
 
 //幅と奥行きの設定
@@ -24,7 +24,7 @@ void CBullet::Update(){
 	if (mLife-- > 0){
 		CTransform::Update();
 		//位置更新
-		mPosition = CVector(0.0f, 0.0f, 4.0f) * mMatrix;
+		mPosition = CVector(0.0f, 0.0f, 4.5f) * mMatrix;
 	}
 	else{
 		//無効にする

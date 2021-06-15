@@ -25,6 +25,9 @@
     <Filter Include="ソース ファイル\エフェクト類">
       <UniqueIdentifier>{244b9d63-4d82-4910-abbf-52c18ac1458f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\出現物\Player">
+      <UniqueIdentifier>{6dddbc3a-8198-47fc-8d9f-33a000231129}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Update.cpp">
@@ -75,9 +78,6 @@
     <ClCompile Include="CEnemy.cpp">
       <Filter>ソース ファイル\出現物</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClCompile>
     <ClCompile Include="CSceneGame.cpp">
       <Filter>ソース ファイル\シーン</Filter>
     </ClCompile>
@@ -116,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="CInput.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>ソース ファイル\出現物\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +173,6 @@
     <ClInclude Include="CEnemy.h">
       <Filter>ソース ファイル\出現物</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClInclude>
     <ClInclude Include="CScene.h">
       <Filter>ソース ファイル\シーン</Filter>
     </ClInclude>
@@ -211,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="CInput.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>ソース ファイル\出現物\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
