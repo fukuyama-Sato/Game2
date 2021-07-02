@@ -48,9 +48,13 @@ void CBullet::Collision(CCollider *m, CCollider *o){
 	if (o->mTag == CCollider::ESEARCH){
 		return;
 	}
-	if (o->mTag == CCharacter::EPLAYER){
-		return;
+
+	if (m->mTag == CCharacter::EBULLETPLAYER){
+		if (o->mTag == CCharacter::EPLAYER){
+			return;
+		}
 	}
+
 	//ƒRƒ‰ƒCƒ_‚Ìm‚Æo‚ªÕ“Ë‚µ‚Ä‚¢‚é‚©”»’è
 	if (CCollider::Collision(m, o)){
 		//Õ“Ë‚µ‚½‚ç–³Œø

@@ -16,11 +16,12 @@
 #include"CCamera.h"
 #include"CColliderTriangle.h"
 #include"CColliderMesh.h"
+#include"CInput.h"
+#include"CKey.h"
 
 CVector mEye;
 CModel mBackGlound; //背景
 CModel mModelC5;	//C5モデル
-CModel mModelSphere;
 
 //モデルからコライダを生成
 CColliderMesh mColliderMesh;
@@ -30,36 +31,32 @@ CMatrix mBackGroundMatrix;
 void CSceneGame::Init() {
 
 	//モデルファイルの入力
-	mModel.Load("f14.obj", "f14.mtl");
-	mBackGlound.Load("sky.obj", "sky.mtl");
-	mModelSphere.Load("sphere.obj", "sphere.mtl");
+	mModel.Load("Character.obj", "Character.mtl");
+	mBackGlound.Load("stage.obj", "stage2.mtl");
 
 	CMatrix matrix;
 	matrix.Print();
 
-	mBackGroundMatrix.Translate(0.0f, 0.0f, -500.0f);
+	mBackGroundMatrix.Translate(0.0f, -2.0f, -500.0f);
 
 	mPlayer.mpModel = &mModel;
-	mPlayer.mScale = CVector(0.3f, 0.3f, 0.3f);
+	mPlayer.mScale = CVector(0.7f, 0.7f, 0.7f);
 	mPlayer.mPosition = CVector(0.0f, 15.0f, -3.0f) * mBackGroundMatrix;
 	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f);
 
-	new CEnemy(CVector(5.0f, 1.0f, -100.0f) * mBackGroundMatrix,
-		CVector(), CVector(1.0f, 1.0f, 1.0f));
-
-	new CSphere(&mModelSphere,
-		CVector(50.0f, 0.0f, -3.0f) * mBackGroundMatrix,
-		CVector(),
-		CVector(10.0f, 10.0f, 10.0f));
+	new CEnemy(CVector(5.0f, 1.0f, -50.0f) * mBackGroundMatrix,
+		CVector(0.0f,0.0f,0.0f), 
+		CVector(0.7f, 0.7f, 0.7f));
 
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列は無し
 	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGlound);
 
-	//カメラ位置
-	camX = -5.0f;
-	camY = 3.0f;
-	camZ = -5.0f;
+	mThurdPerson = false;
+
+	mCamZ = 2;
+	mFcamZ = 50.0f;
+
 }
 
 void CSceneGame::Update() {
@@ -82,13 +79,55 @@ void CSceneGame::Update() {
 	//カメラのパラメータを作成する
 	CVector e, c, u;	//視点,注視点,上方向
 
+	if (CKey::Once('C')){
+		if (mThurdPerson == false){
+			mThurdPerson = true;
+			mCamZ = -10;
+		}
+		else {
+			mThurdPerson = false;
+			mCamZ = 2;
+		}
+	}
+
+	if (mThurdPerson == false){
+		//カメラ位置
+		mCamX = 0.0f;
+		mCamY = 1.0f;
+		mFcamX = 0.0f;
+		mFcamY = 0.0f;
+		if (CKey::Push(VK_RBUTTON) && mCamZ < 9){
+			mCamZ++;
+		}
+		else if (mCamZ > 2){
+			mCamZ--;
+		}
+	}
+	else{
+		//カメラ位置
+		mCamX = -6.0f;
+		mCamY = 5.0f;
+		mFcamX = -5.0f;
+		mFcamY = 3.0f;
+		if (CKey::Push(VK_RBUTTON) && mCamZ < 9){
+			mCamZ++;
+		}
+		else if (mCamZ > -10){
+			mCamZ--;
+		}
+	}
+
 	//視点を求める
-	e = CVector(camX, camY, camZ) * mPlayer.mMatrix;
+	e = CVector(mCamX, mCamY, mCamZ) * mPlayer.mMatrix;
 	//注視点を求める
-	c = CVector(-5.0f, 0.0f, 50.0f) * mPlayer.mMatrix;
+	c = CVector(mFcamX, mFcamY, mFcamZ) * mPlayer.mMatrix;
 	//上方向を求める
 	u = CVector(0, 1, 0);
 
+	//クリア条件
+	//if (CEnemy::mHp <= 0){
+
+	//}
 
 	//カメラの設定
 	//gluLookAt(e.mX, e.mY, e.mZ, c.mX, c.mY, c.mZ, u.mX, u.mY, u.mZ);

@@ -28,6 +28,9 @@
     <Filter Include="ソース ファイル\出現物\Player">
       <UniqueIdentifier>{6dddbc3a-8198-47fc-8d9f-33a000231129}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\出現物\障害物">
+      <UniqueIdentifier>{14a2b017-e231-4655-b7d6-c2c23d11a35f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Update.cpp">
@@ -108,9 +111,6 @@
     <ClCompile Include="CUtil.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="CSphere.cpp">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -119,6 +119,15 @@
     </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>ソース ファイル\出現物\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CSphere.cpp">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
+    </ClCompile>
+    <ClCompile Include="CPillar.cpp">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
+    </ClCompile>
+    <ClCompile Include="CBarricade.cpp">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,14 +215,20 @@
     <ClInclude Include="CUtil.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="CSphere.h">
-      <Filter>ソース ファイル\出現物</Filter>
-    </ClInclude>
     <ClInclude Include="CInput.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>ソース ファイル\出現物\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CSphere.h">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
+    </ClInclude>
+    <ClInclude Include="CPillar.h">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
+    </ClInclude>
+    <ClInclude Include="CBarricade.h">
+      <Filter>ソース ファイル\出現物\障害物</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

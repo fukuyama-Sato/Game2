@@ -11,6 +11,8 @@ public:
 	//プレイヤーのポインタ
 	CCharacter *mpPlayer;
 
+	CSphere();
+
 	CSphere(CModel *model, CVector position, CVector rotation, CVector scale);
 
 	void Update();

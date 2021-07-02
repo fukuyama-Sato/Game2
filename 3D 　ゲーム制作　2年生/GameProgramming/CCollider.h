@@ -20,7 +20,6 @@ public:
 
 	enum ETag{
 		EBODY,
-		EBLOCK,	//áŠQ•¨
 		ESEARCH,
 	};
 	ETag mTag;	//ƒRƒ‰ƒCƒ_¯•Ê

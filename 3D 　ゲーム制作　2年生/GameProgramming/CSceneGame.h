@@ -11,9 +11,15 @@
 */
 class CSceneGame : public CScene {
 private:
-	int camX;
-	int camY;
-	int camZ;
+	float mCamX;
+	float mCamY;
+	float mCamZ;
+
+	float mFcamX;
+	float mFcamY;
+	float mFcamZ;
+
+	bool mThurdPerson;
 
 public:
 	//モデルクラスのインスタンス作成

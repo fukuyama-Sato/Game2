@@ -9,25 +9,25 @@
 　キャラクタクラスを継承*/
 class CEnemy : public CCharacter{
 private:
-	int mSpeedX;	//速度
-	int mSpeedY;
-	int mSpeedZ;
+	int mEFireRate;	//連射速度
+	int mEBulletTortalNum;
+	int mEBulletNum;
+	int mEReloadTime;
+
+	bool mEJump;
+
+	int mEspeedX;	//速度
+	int mEspeedY;
+	int mEspeedZ;
 	float mMoveSpeedX;	//移動用
 	float mMoveSpeedY;
 	float mMoveSpeedZ;
-
-	float dx;
-	float dy;
-	float dz;
-	CVector vx;
-	CVector vy;
-	CVector vz;
 
 	int mMoveControl;	//プレイヤーとの距離の判断
 
 public:
 
-	int mHp;	//ヒットポイント
+	static int mHp;	//ヒットポイント
 	//モデルデータ
 	static CModel mModel;
 	//目標地点
@@ -44,15 +44,10 @@ public:
 	CEnemy(const CVector& position, const CVector& rotation,
 		const CVector& scale);
 
-
-	void MoveMane();
+	void Move();
 
 	//更新処理
 	void Update();
-
-	void NearMove();	//近距離用動作
-	void MediumMove();	//中距離用動作
-	void DistantMove();	//遠距離用動作
 
 	//衝突処理
 	//Collider(コライダ1,コライダ2)

@@ -3,15 +3,22 @@
 #include"CCollisionManager.h"
 #include"CEffect.h"
 
-CSphere::CSphere(CModel *model, CVector position, CVector rotation, CVector scale)
+CSphere::CSphere()
 :mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 10.0f)
+{
+	mTag = EBLOCK;
+}
+
+CSphere::CSphere(CModel *model, CVector position, CVector rotation, CVector scale)
+: CSphere()
 {
 	//ƒ‚ƒfƒ‹,ˆÊ’u,‰ñ“],Šgk‚ðÝ’è
 	mpModel = model;		//ƒ‚ƒfƒ‹‚ÌÝ’è
 	mPosition = position;	//ˆÊ’u‚ÌÝ’è
 	mRotation = rotation;	//‰ñ“]‚ÌÝ’è
 	mScale = scale;			//Šgk‚ÌÝ’è
-	mTag = EBLOCK;
+	CTransform::Update();
+
 	mPriority = 1; //—Dæ“x1
 	CTaskManager::Get()->Remove(this);
 	CTaskManager::Get()->Add(this);
