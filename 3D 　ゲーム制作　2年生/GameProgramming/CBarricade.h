@@ -13,10 +13,10 @@ public:
 	CColliderTriangle mCollider2a;
 	CColliderTriangle mCollider2b;
 
+	static CModel mModel;
+
 	//プレイヤーのポインタ
 	CCharacter *mpPlayer;
-
-	CBarricade();
 
 	CBarricade(CModel *model, CVector position, CVector rotation, CVector scale);
 

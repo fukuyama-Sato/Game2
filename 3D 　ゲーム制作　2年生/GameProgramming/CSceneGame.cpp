@@ -13,6 +13,8 @@
 #include"CEnemy.h"
 #include"CBillBoard.h"
 #include"CSphere.h"
+#include"CBarricade.h"
+#include"CPillar.h"
 #include"CCamera.h"
 #include"CColliderTriangle.h"
 #include"CColliderMesh.h"
@@ -20,8 +22,10 @@
 #include"CKey.h"
 
 CVector mEye;
-CModel mBackGlound; //背景
-CModel mModelC5;	//C5モデル
+CModel mBackGround; //背景
+
+CModel mPillar;
+CModel mBarricade;
 
 //モデルからコライダを生成
 CColliderMesh mColliderMesh;
@@ -32,7 +36,7 @@ void CSceneGame::Init() {
 
 	//モデルファイルの入力
 	mModel.Load("Character.obj", "Character.mtl");
-	mBackGlound.Load("stage.obj", "stage2.mtl");
+	mBackGround.Load("stage.obj", "stage2.mtl");
 
 	CMatrix matrix;
 	matrix.Print();
@@ -41,21 +45,32 @@ void CSceneGame::Init() {
 
 	mPlayer.mpModel = &mModel;
 	mPlayer.mScale = CVector(0.7f, 0.7f, 0.7f);
-	mPlayer.mPosition = CVector(0.0f, 15.0f, -3.0f) * mBackGroundMatrix;
-	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f);
+	mPlayer.mPosition = CVector(0.0f, 5.0f, -3.0f) * mBackGroundMatrix;
+	mPlayer.mRotation = CVector(0.0f, 0.0f, 0.0f);
 
 	new CEnemy(CVector(5.0f, 1.0f, -50.0f) * mBackGroundMatrix,
 		CVector(0.0f,0.0f,0.0f), 
 		CVector(0.7f, 0.7f, 0.7f));
 
+	new CPillar(&mPillar,
+		CVector(-50.0f, 0.0f, 0.0f) * mBackGroundMatrix,
+		CVector(),
+		CVector(2.0f, 10.0f, 2.0f));
+
+	new CBarricade(&mBarricade,
+		CVector(50.0f, 0.0f, 0.0f) * mBackGroundMatrix,
+		CVector(),
+		CVector(1.0f, 1.0f, 1.0f));
+
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列は無し
-	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGlound);
+	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGround);
+
 
 	mThurdPerson = false;
 
 	mCamZ = 2;
-	mFcamZ = 50.0f;
+	mFcamZ = 40.0f;
 
 }
 
@@ -95,12 +110,12 @@ void CSceneGame::Update() {
 		mCamX = 0.0f;
 		mCamY = 1.0f;
 		mFcamX = 0.0f;
-		mFcamY = 0.0f;
+		mFcamY = -0.5f;
 		if (CKey::Push(VK_RBUTTON) && mCamZ < 9){
-			mCamZ++;
+			mCamZ += 0.4f;
 		}
 		else if (mCamZ > 2){
-			mCamZ--;
+			mCamZ -= 0.4f;
 		}
 	}
 	else{
@@ -108,12 +123,12 @@ void CSceneGame::Update() {
 		mCamX = -6.0f;
 		mCamY = 5.0f;
 		mFcamX = -5.0f;
-		mFcamY = 3.0f;
+		mFcamY = 2.0f;
 		if (CKey::Push(VK_RBUTTON) && mCamZ < 9){
-			mCamZ++;
+			mCamZ += 0.4f;
 		}
 		else if (mCamZ > -10){
-			mCamZ--;
+			mCamZ -= 0.4f;
 		}
 	}
 
@@ -124,18 +139,16 @@ void CSceneGame::Update() {
 	//上方向を求める
 	u = CVector(0, 1, 0);
 
+	//カメラクラスの設定
+	Camera.Set(e, c, u);
+	Camera.Render();
+
 	//クリア条件
 	//if (CEnemy::mHp <= 0){
 
 	//}
 
-	//カメラの設定
-	//gluLookAt(e.mX, e.mY, e.mZ, c.mX, c.mY, c.mZ, u.mX, u.mY, u.mZ);
-	//カメラクラスの設定
-	Camera.Set(e, c, u);
-	Camera.Render();
-
-	mBackGlound.Render(mBackGroundMatrix);
+	mBackGround.Render(mBackGroundMatrix);
 
 	//タスクリストの削除
 	CTaskManager::Get()->Delete();

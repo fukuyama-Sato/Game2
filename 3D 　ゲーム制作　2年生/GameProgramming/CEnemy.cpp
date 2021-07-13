@@ -6,17 +6,17 @@
 
 #define OBJ "Character.obj"	//モデルのファイル
 #define MTL "Character.mtl"	//モデルのマテリアルファイル
-#define EHP 20	//耐久値
-#define VELOCITYX 0.2f	//X速度
-#define VELOCITYY 0.2f	//Y速度
-#define VELOCITYZ 0.2f	//Z速度
+#define EHP 200	//耐久値
+#define VELOCITYX 0.5f	//X速度
+#define VELOCITYY 0.5f	//Y速度
+#define VELOCITYZ 0.5f	//Z速度
 #define GLAVITY -0.02f //重力
 
 #define JUMPPOWER 1	//ジャンプ力
 
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 600
+#define BULLETTORTALNUM 300
 #define RELOAD 260
 
 CModel CEnemy::mModel;	//モデルデータ作成
@@ -24,8 +24,11 @@ int CEnemy::mHp = EHP;
 
 //デフォルトコンストラクタ
 CEnemy::CEnemy()
-:mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 2.0f)
-, mColSearch1(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 200.0f)
+: mELine(this, &mMatrix, CVector(0.0f, 0.0f, -6.0f), CVector(0.0f, 0.0f, 8.0f))
+, mELine2(this, &mMatrix, CVector(0.0f, 5.0f, 2.0f), CVector(0.0f, -5.0f, 2.0f))
+, mELine3(this, &mMatrix, CVector(7.0f, 0.0f, 0.0f), CVector(-7.0f, 0.0f, 0.0f))
+,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 4.0f), 5.0f)
+, mColSearch1(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 150.0f)
 , mpPlayer(0)
 , mEFireRate(0)
 , mMoveSpeedX(0)
@@ -46,6 +49,8 @@ CEnemy::CEnemy()
 	mCollider.mTag = CCollider::EBODY;
 	//目標地点の設定
 	mPoint = mPosition + CVector(0.0f, 0.0f, 100.0f) * mMatrixRotate;
+
+	mMoveControl = 1;
 
 }
 
@@ -79,24 +84,29 @@ void CEnemy::Move(){
 		float dy = vp.Dot(vy);	//上ベクトルとの内積を求める
 		float dz = vp.Dot(vz);	//前ベクトルとの内積を求める
 
-		if (-15.0f < dx && dx > 15.0f){
-			if (-15.0f < dz && dz > 15.0f){
-				mMoveControl = 2;
-			}
-		}
+		if (CEnemy::mHp > 0){
 
-		//近
-		if (mMoveControl == 0){
-				mMoveSpeedX = 1.1f;
-		}
-		//中
-		if (mMoveControl == 1){
-				mMoveSpeedZ = 1.1f;
+			if (-3.0f < dx && dx < 3.0f){
+				if (-3.0f < dz && dz < 3.0f){
+					mMoveControl = 0;
+				}
 			}
-		//遠
-		if (mMoveControl == 2){
-				mMoveSpeedZ = -1.1f;
+
+			if (-3.0f > dx && dx > 3.0f && -10.0f < dx && dx < 10.0f){
+				if (-3.0f > dz && dz > 3.0f && -10.0f < dz && dz < 10.0f){
+					mMoveControl = 1;
+				}
+			}
+
+			if (-10.0f > dx && dx > 10.0f){
+				if (-10.0f > dz && dz > 10.0f){
+					mMoveControl = 2;
+				}
+			}
+
+			
 		}
+			
 }
 
 void CEnemy::Update(){
@@ -104,12 +114,17 @@ void CEnemy::Update(){
 	mMoveSpeedY += GLAVITY;
 	mPosition.mY += mMoveSpeedY;
 	//疑似着地
-	if (mPosition.mY < 1){
+	if (mPosition.mY < 3.0f){
 		mEJump = true;
 		if (mPosition.mY < 0){
 			mMoveSpeedY = 0.08;
 		}
 	}
+
+	if (CEnemy::mHp > 0){
+
+	//移動
+	mPosition = mPosition + CVector(mMoveSpeedX, 0.0f, mMoveSpeedZ) * mMatrixRotate;
 
 	//リロード
 	if (mEBulletNum <= 0){
@@ -124,11 +139,11 @@ void CEnemy::Update(){
 	}
 	if (mEFireRate >= 0)mEFireRate--;
 
-	if (CEnemy::mHp > 0){
+
 		//およそ1.5秒毎に目標地点を更新
 		int r = rand() % 100;	//rand()は整数の乱数を返す
 		//100で割った余りを求める
-		if (r == 0){
+		if (r > 50){
 			if (mpPlayer){
 				mPoint = mpPlayer->mPosition;
 			}
@@ -137,7 +152,7 @@ void CEnemy::Update(){
 			}
 		}
 		//ジャンプ
-		if (mEJump == true && r == 98){
+		if (mEJump == true && r == 40){
 			mMoveSpeedY += JUMPPOWER;
 			mEJump = false;
 		}
@@ -156,7 +171,7 @@ void CEnemy::Update(){
 			float dy = vp.Dot(vy);	//上ベクトルとの内積を求める
 			float dz = vp.Dot(vz);	//前ベクトルとの内積を求める
 
-			if (-10.0f < dx && dx < 10.0f){
+			if (-5.0f < dx && dx < 5.0f){
 				if (-5.0f < dy && dy < 5.0f){
 					if (dz > 0.0f){
 
@@ -177,6 +192,21 @@ void CEnemy::Update(){
 					}
 				}
 			}
+			switch (mMoveControl){
+				//近
+			case 0:
+				mMoveSpeedX = VELOCITYX;
+				mMoveSpeedZ = -VELOCITYZ;
+				break;
+				//中
+			case 1:
+				mMoveSpeedX = -VELOCITYX;
+				break;
+				//遠
+			case 2:
+				mMoveSpeedZ = VELOCITYZ;
+				break;
+			}
 
 		}
 
@@ -185,22 +215,22 @@ void CEnemy::Update(){
 		float dx = vp.Dot(vx); //左ベクトルとの内積
 		float dy = vp.Dot(vy); //上ベクトルとの内積
 
-		float margin = 1.0f;
+		float margin = 0.1f;
 
 		//左右方向へ回転
 		if (dx > margin){
-			mRotation.mY += 4.0f;
+			mRotation.mY += 5.0f;
 		}
 		else if (dx < -margin){
-			mRotation.mY -= 4.0f;
+			mRotation.mY -= 5.0f;
 		}
 
 		//上下方向へ回転
 		if (dy > margin){
-			mRotation.mX -= 2.0f;
+			mRotation.mX -= 1.0f;
 		}
 		else if (dy < -margin){
-			mRotation.mX += 2.0f;
+			mRotation.mX += 1.0f;
 		}
 
 	}
@@ -215,9 +245,6 @@ void CEnemy::Update(){
 			new CEffect(mPosition, 2.0f, 2.0f, "exp.tga", 4, 4, 2);
 		}
 	}
-
-	//移動
-	mPosition = mPosition + CVector(mMoveSpeedX, 0.0f, mMoveSpeedZ) * mMatrixRotate;
 	CTransform::Update();	//行列更新
 }
 
@@ -265,6 +292,7 @@ void CEnemy::Collision(CCollider *m, CCollider *o){
 		if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
 			//衝突しない位置まで戻す
 			mPosition = mPosition + adjust;
+
 			break;
 		}
 		
@@ -274,9 +302,15 @@ void CEnemy::Collision(CCollider *m, CCollider *o){
 
 void CEnemy::TaskCollision(){
 	//コライダの優先度変更
+	mELine.ChangePriority();
+	mELine2.ChangePriority();
+	mELine3.ChangePriority();
 	mCollider.ChangePriority();
 	mColSearch1.ChangePriority();
 	//衝突処理 実行
+	CCollisionManager::Get()->Collision(&mELine, COLLISIONRANGE);
+	CCollisionManager::Get()->Collision(&mELine2, COLLISIONRANGE);
+	CCollisionManager::Get()->Collision(&mELine3, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mColSearch1, COLLISIONRANGE);
 }

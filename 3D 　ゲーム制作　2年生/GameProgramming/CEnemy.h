@@ -5,6 +5,7 @@
 //コライダクラスのインクルード
 #include"CCollider.h"
 #include"CVector.h"
+#include"CColliderLine.h"
 /*エネミークラス
 　キャラクタクラスを継承*/
 class CEnemy : public CCharacter{
@@ -32,6 +33,10 @@ public:
 	static CModel mModel;
 	//目標地点
 	CVector mPoint;
+
+	CColliderLine mELine; //線分コライダ
+	CColliderLine mELine2; //線分コライダ
+	CColliderLine mELine3; //線分コライダ
 	//コライダ
 	CCollider mCollider;
 	//サーチ用コライダ 

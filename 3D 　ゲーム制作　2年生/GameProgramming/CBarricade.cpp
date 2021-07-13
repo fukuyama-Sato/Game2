@@ -3,43 +3,48 @@
 #include"CCollisionManager.h"
 #include"CEffect.h"
 
-CBarricade::CBarricade()
-	//以下、未調整
-	:mCollider1a(this, &mMatrix,
-	CVector(0.0f, -4.0f, 10.0f),
-	CVector(5.0f, -6.0f, 0.0f),
-	CVector(-5.0f, -6.0f, 0.0f))
-	, mCollider1b(this, &mMatrix,
-	CVector(0.0f, -4.0f, 10.0f),
-	CVector(5.0f, -6.0f, 0.0f),
-	CVector(-5.0f, -6.0f, 0.0f))
+#define OBJ "barricade.obj"
+#define MTL "barricade.mtl"
 
-	, mCollider2a(this, &mMatrix,
-	CVector(0.0f, -4.0f, 10.0f),
-	CVector(5.0f, -6.0f, 0.0f),
-	CVector(-5.0f, -6.0f, 0.0f))
-	, mCollider2b(this, &mMatrix,
-	CVector(0.0f, -4.0f, 10.0f),
-	CVector(5.0f, -6.0f, 0.0f),
-	CVector(-5.0f, -6.0f, 0.0f))
-
-{
-	mTag = EBLOCK;
-}
+CModel CBarricade::mModel;
 
 CBarricade::CBarricade(CModel *model, CVector position, CVector rotation, CVector scale)
-: CBarricade()
+:mCollider1a(this, &mMatrix,
+CVector(10.0f, 0.0f, 1.0f),
+CVector(9.0f, 6.0f, 1.0f),
+CVector(-9.0f, 6.0f, 1.0f))
+, mCollider1b(this, &mMatrix,
+CVector(-9.0f, 6.0f, 1.0f),
+CVector(-10.0f, 0.0f, 1.0f),
+CVector(10.0f, 0.0f, 1.0f))
+
+, mCollider2a(this, &mMatrix,
+CVector(-9.0f, 6.0f, -1.0f),
+CVector(9.0f, 6.0f, -1.0f),
+CVector(10.0f, 0.0f, -1.0f))
+
+, mCollider2b(this, &mMatrix,
+CVector(10.0f, 0.0f, -1.0f),
+CVector(-10.0f, 0.0f, -1.0f),
+CVector(-9.0f, 6.0f, -1.0f))
 {
 	//モデル,位置,回転,拡縮を設定
 	mpModel = model;		//モデルの設定
 	mPosition = position;	//位置の設定
 	mRotation = rotation;	//回転の設定
 	mScale = scale;			//拡縮の設定
-	CTransform::Update();
+
+	//モデルが無いときは読み込む
+	if (mModel.mTriangles.size() == 0){
+		mModel.Load(OBJ, MTL);
+	}
+
+	mTag = EBLOCK;
 
 	mPriority = 1; //優先度1
 	CTaskManager::Get()->Remove(this);
 	CTaskManager::Get()->Add(this);
+
 }
 
 void CBarricade::Update(){
@@ -54,28 +59,28 @@ void CBarricade::Collision(CCollider *m, CCollider *o){
 		return;
 	}
 
-	//自分がサーチ用の時
-	if (m->mTag == CCollider::ESEARCH){
+
 		//相手が球コライダ
-		if (o->mType == CCollider::ESPHERE){
-			if (o->mpParent->mTag == EPLAYER){
-				//衝突中
-				if (CCollider::Collision(m, o)){
-					//プレイヤーのポインタ設定
-					mpPlayer = o->mpParent;
-				}
+	if (o->mType == CCollider::ESPHERE){
+		if (o->mpParent->mTag == EPLAYER){
+			//衝突中
+			if (CCollider::Collision(m, o)){
+				//プレイヤーのポインタ設定
+				mpPlayer = o->mpParent;
 			}
 		}
-		return;
 	}
+		return;
 
 	//相手のコライダタイプの判定
 	switch (o->mType){
 	case CCollider::ESPHERE: //球コライダ
+		if (o->mTag == CCharacter::EBULLETPLAYER || o->mTag == CCharacter::EBULLETENEMY){
 		//コライダのmとoが衝突しているか判定
-		if (CCollider::Collision(m, o)){
-			//エフェクト生成
-			new CEffect(o->mpParent->mPosition, 1.0f, 1.0f, "exp.tga", 4, 4, 2);
+			if (CCollider::Collision(m, o)){
+				//エフェクト生成
+				new CEffect(o->mpParent->mPosition, 1.0f, 1.0f, "exp.tga", 4, 4, 2);
+			}
 		}
 		break;
 	}

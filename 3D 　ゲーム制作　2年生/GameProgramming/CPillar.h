@@ -3,6 +3,7 @@
 
 #include "CCharacter.h"
 #include"CColliderTriangle.h"
+#include"CModel.h"
 
 class CPillar : public CCharacter{
 public:
@@ -18,6 +19,9 @@ public:
 
 	CColliderTriangle mCollider4a;
 	CColliderTriangle mCollider4b;
+
+	static CModel mModel;
+
 	//プレイヤーのポインタ
 	CCharacter *mpPlayer;
 

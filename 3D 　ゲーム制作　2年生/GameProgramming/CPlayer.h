@@ -24,6 +24,8 @@ private:
 	float mBeforMouseY;
 	float mMouseMoveX;	//マウス移動量
 	float mMouseMoveY;
+	float mMouseSpeedX;	//マウス感度
+	float mMouseSpeedY;
 
 public:
 
@@ -33,7 +35,7 @@ public:
 	CColliderLine mLine2; //線分コライダ
 	CColliderLine mLine3; //線分コライダ
 	CCollider mCollider; //本体用コライダ
-	CColliderTriangle mTriangleCol;
+	//CColliderTriangle mTriangleCol;
 
 	CPlayer();
 	//更新処理

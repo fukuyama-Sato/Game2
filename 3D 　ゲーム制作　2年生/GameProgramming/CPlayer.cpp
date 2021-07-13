@@ -12,22 +12,24 @@
 #define JUMPPOWER 1	//ジャンプ力
 #define VELOCITY 0.1f	//移動力
 #define SPEEDREMIT 1	//速度制限
+#define MOUSESPEEDX 0.8f	//マウス横感度
+#define MOUSESPEEDY 0.8f	//マウス縦感度
 #define SUBERI 2	//滑り易さ
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 600
+#define BULLETTORTALNUM 350
 #define RELOAD 260
-#define PHP 20
+#define PHP 200
 
 CText mText;
 
 CPlayer::CPlayer()
 : mLine(this, &mMatrix, CVector(0.0f, 0.0f, -6.0f), CVector(0.0f, 0.0f, 8.0f))
-, mLine2(this, &mMatrix, CVector(0.0f, 5.0f, 2.0f), CVector(0.0f, -5.0f, 2.0f))
+, mLine2(this, &mMatrix, CVector(0.0f, 5.0f, 2.0f), CVector(0.0f, -8.0f, 2.0f))
 , mLine3(this, &mMatrix, CVector(7.0f, 0.0f, 0.0f), CVector(-7.0f, 0.0f, 0.0f))
-, mCollider(this, &mMatrix, CVector(0.0f,0.0f,0.0f),2.5f)
-, mTriangleCol(this, &mMatrix, 
-	CVector(0.0f, -4.0f, 10.0f), CVector(5.0f, -6.0f, 0.0f),CVector(-5.0f, -6.0f, 0.0f))
+, mCollider(this, &mMatrix, CVector(0.0f,0.0f,0.0f),3.5f)
+//, mTriangleCol(this, &mMatrix, 
+//	CVector(0.0f, -4.0f, 10.0f), CVector(5.0f, -6.0f, 0.0f),CVector(-5.0f, -6.0f, 0.0f))
 {
 	mText.LoadTexture("FontWhite.tga", 1, 64);
 	mTag = EPLAYER; //タグの設定
@@ -46,6 +48,9 @@ CPlayer::CPlayer()
 	mBulletTortalNum = BULLETTORTALNUM;
 	mBulletNum = BULLETNUMBER;
 	mReloadTime = 0;
+
+	mMouseSpeedX = MOUSESPEEDX;
+	mMouseSpeedY = MOUSESPEEDY;
 }
 
 //更新処理
@@ -59,13 +64,14 @@ void CPlayer::Update(){
 	mMousePosX -= 400;
 	mMousePosY = 300 - mMousePosY;
 
+	mSpeedY += GLAVITY;
+	mPosition.mY += mSpeedY;
+
 	//スペースキーでジャンプ
 	if (CKey::Once(VK_SPACE) && mJump == true){
 		mSpeedY += JUMPPOWER;
 		mJump = false;
 	}
-	mSpeedY += GLAVITY;
-	mPosition.mY += mSpeedY;
 
 
 	//CTransformの更新
@@ -92,26 +98,28 @@ void CPlayer::Update(){
 
 
 	//ここからマウスによる操作
+	//移動量
 	mMouseMoveX = mMousePosX - mBeforMouseX;
 	mMouseMoveY = mMousePosY - mBeforMouseY;
+
 	//視点操作
 
 	//if (mMousePosX > -400 && mMousePosX < 400 && mMousePosY > -300 && mMousePosY < 300){
-		mRotation.mX -= mMouseMoveY/1.5;
-		mRotation.mY -= mMouseMoveX/1.5;
+	mRotation.mX -= mMouseMoveY / mMouseSpeedX;
+	mRotation.mY -= mMouseMoveX / mMouseSpeedY;
 	//}
-		//上下
-		if (mRotation.mX > 90){
 
-		}
-		else if (mRotation.mX < -90){
+	if (mRotation.mX < -90)
+		mRotation.mX = -89;
 
-		}
+	if (mRotation.mX > 85)
+		mRotation.mX = 84;
+
 
 	
 
 	//左クリックで弾を発射
-		if (mBulletTortalNum > 0){
+		if (mBulletTortalNum >= 0){
 			if (CKey::Push(VK_LBUTTON) && mFireRate-- < 0 && mBulletNum > 0 && mReloadTime < 0){
 				CBullet *bullet = new CBullet();
 				bullet->mTag = CCharacter::EBULLETPLAYER;
@@ -123,13 +131,22 @@ void CPlayer::Update(){
 				mFireRate = FIRERATE;
 			}
 			//リロード
-			if (CKey::Once('R') || mBulletNum <= 0){
-				mReloadTime = RELOAD;
+			if (mBulletTortalNum > 0){
+				if (CKey::Once('R') || mBulletNum <= 0){
+					mReloadTime = RELOAD;
+				}
 			}
-			if (mReloadTime > 0){
-				mBulletTortalNum -= BULLETNUMBER - mBulletNum;
-				mBulletNum = BULLETNUMBER;
+			if (mReloadTime == RELOAD){
+				if (mBulletTortalNum >= 50){
+					mBulletTortalNum -= BULLETNUMBER - mBulletNum;
+					mBulletNum = BULLETNUMBER;
+				}
+				else{
+					mBulletNum += mBulletTortalNum;
+					mBulletTortalNum = 0;
+				}
 			}
+				
 			if (mReloadTime > -1){
 				mReloadTime--;
 			}
@@ -146,16 +163,8 @@ void CPlayer::Update(){
 	//位置の移動
 	mPosition = CVector(mSpeedX,0.0f,mSpeedZ) * mMatrix;
 
-	////疑似着地
-	//if (mPosition.mY < 1){
-	//	mJump = true;
-	//	if (mPosition.mY < 0){
-	//		mSpeedY = 0;
-	//	}
-	//}
-
 	//慣性擬き
-	if (mPosition.mY < 10){
+	if (mPosition.mY < 5){
 		//X
 		if (mSpeedX >= 0.01){
 			mSpeedX -= VELOCITY / SUBERI;
@@ -190,11 +199,10 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			//位置の更新(mPosition + adjust)
 			mPosition = mPosition - adjust * -1;
 			//疑似着地
-			if (mPosition.mY < 1){
+			if (mPosition.mY < 3.5f){
 				mJump = true;
-				if (mPosition.mY < 0){
-					mSpeedY = 0.1;
-				}
+				if (mPosition.mY < 3.3)
+				mSpeedY = 0.1f;
 			}
 			CTransform::Update();
 			break;
@@ -306,11 +314,11 @@ void CPlayer::TaskCollision(){
 	mLine2.ChangePriority();
 	mLine3.ChangePriority();
 	mCollider.ChangePriority();
-	mTriangleCol.ChangePriority();
+	//mTriangleCol.ChangePriority();
 	//衝突処理 実行
 	CCollisionManager::Get()->Collision(&mLine, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine2, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine3, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
-	CCollisionManager::Get()->Collision(&mTriangleCol,COLLISIONRANGE);
+	//CCollisionManager::Get()->Collision(&mTriangleCol,COLLISIONRANGE);
 }
