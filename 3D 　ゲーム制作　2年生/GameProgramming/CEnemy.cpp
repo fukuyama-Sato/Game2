@@ -1,4 +1,5 @@
 #include"CEnemy.h"
+#include"CSound.h"
 #include"CTaskManager.h"
 #include"CCollisionManager.h"
 #include"CEffect.h"
@@ -6,21 +7,27 @@
 
 #define OBJ "Character.obj"	//モデルのファイル
 #define MTL "Character.mtl"	//モデルのマテリアルファイル
-#define EHP 200	//耐久値
 #define VELOCITYX 0.5f	//X速度
 #define VELOCITYY 0.5f	//Y速度
 #define VELOCITYZ 0.5f	//Z速度
 #define GLAVITY -0.02f //重力
 
-#define JUMPPOWER 1	//ジャンプ力
+#define JUMPPOWER 0.5f	//ジャンプ力
 
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 300
+#define BULLETTORTALNUM 450
 #define RELOAD 260
+
+#define EHP 150	//耐久値
 
 CModel CEnemy::mModel;	//モデルデータ作成
 int CEnemy::mHp = EHP;
+
+extern CSound EnemyFire;
+extern CSound EnemyJump;
+
+extern CSound HP0;
 
 //デフォルトコンストラクタ
 CEnemy::CEnemy()
@@ -84,7 +91,7 @@ void CEnemy::Move(){
 		float dy = vp.Dot(vy);	//上ベクトルとの内積を求める
 		float dz = vp.Dot(vz);	//前ベクトルとの内積を求める
 
-		if (CEnemy::mHp > 0){
+		if (mHp > 0){
 
 			if (-3.0f < dx && dx < 3.0f){
 				if (-3.0f < dz && dz < 3.0f){
@@ -117,7 +124,7 @@ void CEnemy::Update(){
 	if (mPosition.mY < 3.0f){
 		mEJump = true;
 		if (mPosition.mY < 0){
-			mMoveSpeedY = 0.08;
+			mMoveSpeedY = 0.1;
 		}
 	}
 
@@ -140,10 +147,9 @@ void CEnemy::Update(){
 	if (mEFireRate >= 0)mEFireRate--;
 
 
-		//およそ1.5秒毎に目標地点を更新
 		int r = rand() % 100;	//rand()は整数の乱数を返す
 		//100で割った余りを求める
-		if (r > 50){
+		if (r < 60){
 			if (mpPlayer){
 				mPoint = mpPlayer->mPosition;
 			}
@@ -154,6 +160,7 @@ void CEnemy::Update(){
 		//ジャンプ
 		if (mEJump == true && r == 40){
 			mMoveSpeedY += JUMPPOWER;
+			EnemyJump.Play();
 			mEJump = false;
 		}
 
@@ -184,6 +191,7 @@ void CEnemy::Update(){
 									bullet->mPosition = CVector(-3.0f, 2.5f, 13.0f) * mMatrix;
 									bullet->mRotation = mRotation;
 									bullet->Update();
+									EnemyFire.Play();
 									mEBulletNum--;
 									mEFireRate = FIRERATE;
 								}
@@ -210,7 +218,6 @@ void CEnemy::Update(){
 
 		}
 
-		mpPlayer = 0;
 		CVector vp = mPoint - mPosition;
 		float dx = vp.Dot(vx); //左ベクトルとの内積
 		float dy = vp.Dot(vy); //上ベクトルとの内積
@@ -219,10 +226,10 @@ void CEnemy::Update(){
 
 		//左右方向へ回転
 		if (dx > margin){
-			mRotation.mY += 5.0f;
+			mRotation.mY += 3.0f;
 		}
 		else if (dx < -margin){
-			mRotation.mY -= 5.0f;
+			mRotation.mY -= 3.0f;
 		}
 
 		//上下方向へ回転
@@ -237,8 +244,10 @@ void CEnemy::Update(){
 
 	else{
 		//死亡時爆発エフェクト
-		if (mHp > -4)
-		new CEffect(mPosition, 15.0f, 15.0f, "exp.tga", 4, 4, 2);
+		if (mHp > -4){
+			new CEffect(mPosition, 15.0f, 15.0f, "exp.tga", 4, 4, 2);
+			HP0.Play();
+		}
 		mHp--;
 		if (mHp % 25 == 0){
 			//エフェクト生成

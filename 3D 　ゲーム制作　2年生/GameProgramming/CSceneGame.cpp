@@ -3,25 +3,40 @@
 #include"glut.h"
 #include"CVector.h"
 #include"CTriangle.h"
-#include"CKey.h"
 #include"CMatrix.h"
 #include"CTransform.h"
 #include"CTaskManager.h"
 #include"CCollisionManager.h"
-#include"CVector.h"
+#include"CColliderTriangle.h"
+#include"CColliderMesh.h"
+
 #include"CPlayer.h"
 #include"CEnemy.h"
 #include"CBillBoard.h"
 #include"CSphere.h"
 #include"CBarricade.h"
 #include"CPillar.h"
-#include"CCamera.h"
-#include"CColliderTriangle.h"
-#include"CColliderMesh.h"
+
 #include"CInput.h"
 #include"CKey.h"
+#include"CCamera.h"
+#include"CSound.h"
 
 CVector mEye;
+
+CSound HP0;
+
+CSound Reload;
+CSound Fire;
+CSound NoAmmo;
+CSound Jump;
+
+CSound EnemyFire;
+CSound EnemyJump;
+
+
+//CSound Bgm;
+
 CModel mBackGround; //背景
 
 CModel mPillar;
@@ -36,7 +51,22 @@ void CSceneGame::Init() {
 
 	//モデルファイルの入力
 	mModel.Load("Character.obj", "Character.mtl");
+	mPillar.Load("Pillar.obj","Pillar.mtl");
+	mBarricade.Load("barricade.obj", "barricade.mtl");
 	mBackGround.Load("stage.obj", "stage2.mtl");
+
+	//wav読み込み
+	//Bgm.Load(".wav");
+
+	HP0.Load("HP0.wav");
+
+	Fire.Load("Fire.wav");
+	Reload.Load("Reload.wav");
+	NoAmmo.Load("NoAmmo.wav");
+	Jump.Load("Jump.wav");
+
+	EnemyFire.Load("EnemyFire.wav");
+	EnemyJump.Load("EnemyJump.wav");
 
 	CMatrix matrix;
 	matrix.Print();
@@ -57,10 +87,20 @@ void CSceneGame::Init() {
 		CVector(),
 		CVector(2.0f, 10.0f, 2.0f));
 
+	new CPillar(&mPillar,
+		CVector(50.0f, 0.0f, 20.0f) * mBackGroundMatrix,
+		CVector(),
+		CVector(2.0f, 10.0f, 2.0f));
+
+	new CBarricade(&mBarricade,
+		CVector(-50.0f, 0.0f, -10.0f) * mBackGroundMatrix,
+		CVector(0.0f, 90.0f, 0.0f),
+		CVector(1.0f, 2.0f, 1.0f));
+
 	new CBarricade(&mBarricade,
 		CVector(50.0f, 0.0f, 0.0f) * mBackGroundMatrix,
 		CVector(),
-		CVector(1.0f, 1.0f, 1.0f));
+		CVector(4.5f, 4.0f, 4.0f));
 
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列は無し

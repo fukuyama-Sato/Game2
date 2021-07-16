@@ -25,8 +25,6 @@ public:
 	//プレイヤーのポインタ
 	CCharacter *mpPlayer;
 
-	CPillar();
-
 	CPillar(CModel *model, CVector position, CVector rotation, CVector scale);
 
 	void Update();

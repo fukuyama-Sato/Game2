@@ -3,9 +3,6 @@
 #include"CCollisionManager.h"
 #include"CEffect.h"
 
-#define OBJ "barricade.obj"
-#define MTL "barricade.mtl"
-
 CModel CBarricade::mModel;
 
 CBarricade::CBarricade(CModel *model, CVector position, CVector rotation, CVector scale)
@@ -33,11 +30,6 @@ CVector(-9.0f, 6.0f, -1.0f))
 	mPosition = position;	//ˆÊ’u‚Ìİ’è
 	mRotation = rotation;	//‰ñ“]‚Ìİ’è
 	mScale = scale;			//Šgk‚Ìİ’è
-
-	//ƒ‚ƒfƒ‹‚ª–³‚¢‚Æ‚«‚Í“Ç‚İ‚Ş
-	if (mModel.mTriangles.size() == 0){
-		mModel.Load(OBJ, MTL);
-	}
 
 	mTag = EBLOCK;
 

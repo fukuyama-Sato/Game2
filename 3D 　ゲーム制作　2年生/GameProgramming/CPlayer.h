@@ -13,10 +13,13 @@
 class CPlayer : public CCharacter{
 private:
 	bool mJump;
+	int mJumpTimer;
+
 	int mFireRate;	//連射速度
 	int mBulletTortalNum;
 	int mBulletNum;
 	int mReloadTime;
+
 	float mSpeedX;	//左右加速度
 	float mSpeedY;	//上下加速度
 	float mSpeedZ;	//前後加速度
@@ -34,6 +37,8 @@ public:
 	CColliderLine mLine; //線分コライダ
 	CColliderLine mLine2; //線分コライダ
 	CColliderLine mLine3; //線分コライダ
+	CColliderLine mLine4; //線分コライダ
+	CColliderLine mLine5; //線分コライダ
 	CCollider mCollider; //本体用コライダ
 	//CColliderTriangle mTriangleCol;
 

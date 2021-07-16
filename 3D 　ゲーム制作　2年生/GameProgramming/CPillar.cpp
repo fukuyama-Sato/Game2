@@ -3,9 +3,6 @@
 #include"CCollisionManager.h"
 #include"CEffect.h"
 
-#define OBJ "Pillar.obj"
-#define MTL "Pillar.mtl"
-
 CModel CPillar::mModel;
 
 CPillar::CPillar(CModel *model, CVector position, CVector rotation, CVector scale)
@@ -15,8 +12,8 @@ CVector(2.0f, 0.0f, 2.0f),
 CVector(-2.0f, 20.0f, 2.0f))
 , mCollider1b(this, &mMatrix,
 CVector(-2.0f, 20.0f, 2.0f),
-CVector(2.0f, 20.0f, 2.0f),
-CVector(2.0f, 0.0f, 2.0f))
+CVector(2.0f, 0.0f, 2.0f),
+CVector(2.0f, 20.0f, 2.0f))
 
 , mCollider2a(this, &mMatrix,
 CVector(2.0f, 0.0f, -2.0f),
@@ -28,33 +25,29 @@ CVector(2.0f, 20.0f, -2.0f),
 CVector(2.0f, 0.0f, -2.0f))
 
 , mCollider3a(this, &mMatrix,
-CVector(2.0f, 0.0f, -2.0f),
 CVector(2.0f, 0.0f, 2.0f),
+CVector(2.0f, 0.0f, -2.0f),
 CVector(2.0f, 20.0f, 2.0f))
 , mCollider3b(this, &mMatrix,
 CVector(2.0f, 20.0f, 2.0f),
-CVector(2.0f, 20.0f, -2.0f),
-CVector(2.0f, 0.0f, -2.0f))
+CVector(2.0f, 0.0f, -2.0f),
+CVector(2.0f, 20.0f, -2.0f))
 
 , mCollider4a(this, &mMatrix,
-CVector(2.0f, 0.0f, -2.0f),
-CVector(2.0f, 0.0f, 2.0f),
-CVector(2.0f, 20.0f, 2.0f))
+CVector(-2.0f, 0.0f, -2.0f),
+CVector(-2.0f, 0.0f, 2.0f),
+CVector(-2.0f, 20.0f, 2.0f))
 , mCollider4b(this, &mMatrix,
-CVector(2.0f, 20.0f, 2.0f),
-CVector(2.0f, 20.0f, -2.0f),
-CVector(2.0f, 0.0f, -2.0f))
+CVector(-2.0f, 20.0f, 2.0f),
+CVector(-2.0f, 20.0f, -2.0f),
+CVector(-2.0f, 0.0f, -2.0f))
 {
 	//モデル,位置,回転,拡縮を設定
 	mpModel = model;		//モデルの設定
 	mPosition = position;	//位置の設定
 	mRotation = rotation;	//回転の設定
 	mScale = scale;			//拡縮の設定
-
-	//モデルが無いときは読み込む
-	if (mModel.mTriangles.size() == 0){
-		mModel.Load(OBJ, MTL);
-	}
+	CTransform::Update();
 
 	mTag = EBLOCK;
 
@@ -90,9 +83,7 @@ void CPillar::Collision(CCollider *m, CCollider *o){
 		return;
 	}
 
-	//相手のコライダタイプの判定
-	switch (o->mType){
-	case CCollider::ESPHERE: //球コライダ
+	if (m->mTag == CCollider::ESPHERE){
 		//コライダのmとoが衝突しているか判定
 		if (o->mTag == CCharacter::EBULLETPLAYER || o->mTag == CCharacter::EBULLETENEMY){
 			if (CCollider::Collision(m, o)){
@@ -100,7 +91,6 @@ void CPillar::Collision(CCollider *m, CCollider *o){
 				new CEffect(o->mpParent->mPosition, 1.0f, 1.0f, "exp.tga", 4, 4, 2);
 			}
 		}
-		break;
 	}
 }
 

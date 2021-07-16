@@ -7,29 +7,42 @@
 #include"CUtil.h"
 #include"CEnemy.h"
 #include"CInput.h"
+#include"CSound.h"
 
 #define GLAVITY -0.02f //重力
-#define JUMPPOWER 1	//ジャンプ力
+#define JUMPPOWER 2.0f	//ジャンプ力
+#define JUMPRECHARGE 70;	//次ジャンプまでの待ち時間
+
 #define VELOCITY 0.1f	//移動力
 #define SPEEDREMIT 1	//速度制限
 #define MOUSESPEEDX 0.8f	//マウス横感度
 #define MOUSESPEEDY 0.8f	//マウス縦感度
 #define SUBERI 2	//滑り易さ
+
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 350
+#define BULLETTORTALNUM 450
 #define RELOAD 260
-#define PHP 200
+
+#define PHP 150	//HP
 
 CText mText;
 
+extern CSound Fire;
+extern CSound Reload;
+extern CSound NoAmmo;
+extern CSound Jump;
+
+extern CSound HP0;
+
+
 CPlayer::CPlayer()
-: mLine(this, &mMatrix, CVector(0.0f, 0.0f, -6.0f), CVector(0.0f, 0.0f, 8.0f))
-, mLine2(this, &mMatrix, CVector(0.0f, 5.0f, 2.0f), CVector(0.0f, -8.0f, 2.0f))
-, mLine3(this, &mMatrix, CVector(7.0f, 0.0f, 0.0f), CVector(-7.0f, 0.0f, 0.0f))
+: mLine(this, &mMatrix, CVector(0.0f, 0.0f, -6.0f), CVector(0.0f, 0.0f, 6.0f))
+, mLine2(this, &mMatrix, CVector(0.0f, 6.0f, 0.0f), CVector(0.0f, -6.0f, 0.0f))
+, mLine3(this, &mMatrix, CVector(6.0f, 0.0f, 0.0f), CVector(-6.0f, 0.0f, 0.0f))
+, mLine4(this, &mMatrix, CVector(0.0f, 4.0f, 4.0f), CVector(0.0f, -4.0f, -4.0f))
+, mLine5(this, &mMatrix, CVector(0.0f, -4.0f, 4.0f), CVector(0.0f, 4.0f, -4.0f))
 , mCollider(this, &mMatrix, CVector(0.0f,0.0f,0.0f),3.5f)
-//, mTriangleCol(this, &mMatrix, 
-//	CVector(0.0f, -4.0f, 10.0f), CVector(5.0f, -6.0f, 0.0f),CVector(-5.0f, -6.0f, 0.0f))
 {
 	mText.LoadTexture("FontWhite.tga", 1, 64);
 	mTag = EPLAYER; //タグの設定
@@ -67,58 +80,61 @@ void CPlayer::Update(){
 	mSpeedY += GLAVITY;
 	mPosition.mY += mSpeedY;
 
-	//スペースキーでジャンプ
-	if (CKey::Once(VK_SPACE) && mJump == true){
-		mSpeedY += JUMPPOWER;
-		mJump = false;
-	}
+	if (mPlayerHp >= 0){
+		//スペースキーでジャンプ
+		if (CKey::Once(VK_SPACE) && mJump == true){
+			mSpeedY += JUMPPOWER;
+			mJumpTimer = JUMPRECHARGE;
+			Jump.Play();
+			mJump = false;
+		}
 
 
-	//CTransformの更新
-	CTransform::Update();
+		//CTransformの更新
+		CTransform::Update();
 
-	//移動
-	if (CKey::Push('A') && mSpeedX < SPEEDREMIT){
-		//X軸の+移動
-		mSpeedX += VELOCITY;
-	}
-	if (CKey::Push('D') && mSpeedX > -SPEEDREMIT){
-		//X軸の-移動
-		mSpeedX -= VELOCITY;
-	}
-	if (CKey::Push('S') && mSpeedZ > -SPEEDREMIT){
-		//Z軸の-移動
-		mSpeedZ -= VELOCITY;
-	}
-	if (CKey::Push('W')&& mSpeedZ < SPEEDREMIT){
-		//Z軸の+移動
-		mSpeedZ += VELOCITY + 0.2;
-	}
-
-
-
-	//ここからマウスによる操作
-	//移動量
-	mMouseMoveX = mMousePosX - mBeforMouseX;
-	mMouseMoveY = mMousePosY - mBeforMouseY;
-
-	//視点操作
-
-	//if (mMousePosX > -400 && mMousePosX < 400 && mMousePosY > -300 && mMousePosY < 300){
-	mRotation.mX -= mMouseMoveY / mMouseSpeedX;
-	mRotation.mY -= mMouseMoveX / mMouseSpeedY;
-	//}
-
-	if (mRotation.mX < -90)
-		mRotation.mX = -89;
-
-	if (mRotation.mX > 85)
-		mRotation.mX = 84;
+		//移動
+		if (CKey::Push('A') && mSpeedX < SPEEDREMIT + 0.5f){
+			//X軸の+移動
+			mSpeedX += VELOCITY;
+		}
+		if (CKey::Push('D') && mSpeedX > -SPEEDREMIT){
+			//X軸の-移動
+			mSpeedX -= VELOCITY;
+		}
+		if (CKey::Push('S') && mSpeedZ > -SPEEDREMIT){
+			//Z軸の-移動
+			mSpeedZ -= VELOCITY;
+		}
+		if (CKey::Push('W') && mSpeedZ < SPEEDREMIT){
+			//Z軸の+移動
+			mSpeedZ += VELOCITY + 0.2;
+		}
 
 
-	
 
-	//左クリックで弾を発射
+		//ここからマウスによる操作
+		//移動量
+		mMouseMoveX = mMousePosX - mBeforMouseX;
+		mMouseMoveY = mMousePosY - mBeforMouseY;
+
+		//視点操作
+
+		//if (mMousePosX > -400 && mMousePosX < 400 && mMousePosY > -300 && mMousePosY < 300){
+		mRotation.mX -= mMouseMoveY / mMouseSpeedX;
+		mRotation.mY -= mMouseMoveX / mMouseSpeedY;
+		//}
+
+		if (mRotation.mX < -90)
+			mRotation.mX = -89;
+
+		if (mRotation.mX > 85)
+			mRotation.mX = 84;
+
+
+
+
+		//左クリックで弾を発射
 		if (mBulletTortalNum >= 0){
 			if (CKey::Push(VK_LBUTTON) && mFireRate-- < 0 && mBulletNum > 0 && mReloadTime < 0){
 				CBullet *bullet = new CBullet();
@@ -127,6 +143,7 @@ void CPlayer::Update(){
 				bullet->mPosition = CVector(-3.0f, 2.5f, 13.0f) * mMatrix;
 				bullet->mRotation = mRotation;
 				bullet->Update();
+				Fire.Play();
 				mBulletNum--;
 				mFireRate = FIRERATE;
 			}
@@ -140,25 +157,33 @@ void CPlayer::Update(){
 				if (mBulletTortalNum >= 50){
 					mBulletTortalNum -= BULLETNUMBER - mBulletNum;
 					mBulletNum = BULLETNUMBER;
+					NoAmmo.Play();
 				}
 				else{
 					mBulletNum += mBulletTortalNum;
 					mBulletTortalNum = 0;
 				}
 			}
-				
+
 			if (mReloadTime > -1){
 				mReloadTime--;
 			}
+			if (mReloadTime == 0){
+				Reload.Play();
+			}
 		}
 
-		if (CKey::Push(VK_RBUTTON)&& mSpeedY < 0){
+		if (CKey::Push(VK_RBUTTON) && mSpeedY < 0){
 			mSpeedY += 0.018f;
 			mSpeedX = mSpeedX / 1.4f;
 			mSpeedZ = mSpeedZ / 1.4f;
 		}
-	//ここまでマウスの操作
+		//ここまでマウスの操作
+	}
 
+	if (mPlayerHp == 0){
+		HP0.Play();
+	}
 
 	//位置の移動
 	mPosition = CVector(mSpeedX,0.0f,mSpeedZ) * mMatrix;
@@ -183,6 +208,9 @@ void CPlayer::Update(){
 
 	mBeforMouseX = mMousePosX;
 	mBeforMouseY = mMousePosY;
+
+	if (mJumpTimer >= 0)
+	mJumpTimer--;
 }
 
 //接触判定
@@ -199,10 +227,10 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			//位置の更新(mPosition + adjust)
 			mPosition = mPosition - adjust * -1;
 			//疑似着地
-			if (mPosition.mY < 3.5f){
+			if (mPosition.mY < 1.6f && mJumpTimer < 0){
 				mJump = true;
-				if (mPosition.mY < 3.3)
-				mSpeedY = 0.1f;
+				if (mPosition.mY < 0.5f)
+					mSpeedY += 0.002f;
 			}
 			CTransform::Update();
 			break;
@@ -232,41 +260,27 @@ void CPlayer::Render(){
 	//文字列編集エリアの作成
 	char buf[64];
 
-	//Y座標の表示
-	//文字列の設定
-	sprintf(buf, "PY:%7.2f", mPosition.mY);
-	//文字列の描画
-	mText.DrawString(buf, 100, 30, 8, 16);
+	////速度表示
+	////文字列の設定
+	//sprintf(buf, "PY:%5f", mPosition.mY);
+	////文字列の描画
+	//mText.DrawString(buf, -300, 200, 8, 16);
 
-	//X軸回転値の表示
-	//文字列の設定
-	sprintf(buf, "RX:%7.2f", mRotation.mX);
-	//文字列の描画
-	mText.DrawString(buf, 100, 0, 8, 16);
+	////速度表示
+	////文字列の設定
+	//sprintf(buf, "VX:%f", mSpeedX);
+	////文字列の描画
+	//mText.DrawString(buf, -300, 200, 8, 16);
 
-	//Y軸回転値の表示
-	//文字列の設定
-	sprintf(buf, "RY:%7.2f", mRotation.mY);
-	//文字列の描画
-	mText.DrawString(buf, 100, -100, 8, 16);
+	////文字列の設定
+	//sprintf(buf, "VY:%f", mSpeedY);
+	////文字列の描画
+	//mText.DrawString(buf, -300, 150, 8, 16);
 
-
-
-	//速度表示
-	//文字列の設定
-	sprintf(buf, "VX:%f", mSpeedX);
-	//文字列の描画
-	mText.DrawString(buf, -300, 200, 8, 16);
-
-	//文字列の設定
-	sprintf(buf, "VY:%f", mSpeedY);
-	//文字列の描画
-	mText.DrawString(buf, -300, 150, 8, 16);
-
-	//文字列の設定
-	sprintf(buf, "VZ:%f", mSpeedZ);
-	//文字列の描画
-	mText.DrawString(buf, -300, 100, 8, 16);
+	////文字列の設定
+	//sprintf(buf, "VZ:%f", mSpeedZ);
+	////文字列の描画
+	//mText.DrawString(buf, -300, 100, 8, 16);
 
 
 	//文字列の設定
@@ -274,17 +288,17 @@ void CPlayer::Render(){
 	//文字列の描画
 	mText.DrawString(buf, -300, 50, 8, 16);
 
-	//敵のHP
-	//文字列の設定
-	sprintf(buf, "EHP:%d", CEnemy::mHp);
-	//文字列の描画
-	mText.DrawString(buf, -300, 0, 8, 16);
+	////敵のHP
+	////文字列の設定
+	//sprintf(buf, "EHP:%d", CEnemy::mHp);
+	////文字列の描画
+	//mText.DrawString(buf, -300, 0, 8, 16);
 
 	//照準(仮)
 	//文字列の設定
-	sprintf(buf, "+");
+	sprintf(buf, "[+]");
 	//文字列の描画
-	mText.DrawString(buf, 0, 20, 20, 20);
+	mText.DrawString(buf, -30, 20, 15, 15);
 
 	//弾数
 	//文字列の設定
@@ -313,12 +327,16 @@ void CPlayer::TaskCollision(){
 	mLine.ChangePriority();
 	mLine2.ChangePriority();
 	mLine3.ChangePriority();
+	mLine4.ChangePriority();
+	mLine5.ChangePriority();
 	mCollider.ChangePriority();
 	//mTriangleCol.ChangePriority();
 	//衝突処理 実行
 	CCollisionManager::Get()->Collision(&mLine, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine2, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine3, COLLISIONRANGE);
+	CCollisionManager::Get()->Collision(&mLine4, COLLISIONRANGE);
+	CCollisionManager::Get()->Collision(&mLine5, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
 	//CCollisionManager::Get()->Collision(&mTriangleCol,COLLISIONRANGE);
 }
