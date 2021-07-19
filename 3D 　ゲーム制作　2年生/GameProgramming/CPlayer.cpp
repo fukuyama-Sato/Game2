@@ -11,7 +11,7 @@
 
 #define GLAVITY -0.02f //重力
 #define JUMPPOWER 2.0f	//ジャンプ力
-#define JUMPRECHARGE 70;	//次ジャンプまでの待ち時間
+#define JUMPRECHARGE 70	//次ジャンプまでの待ち時間
 
 #define VELOCITY 0.1f	//移動力
 #define SPEEDREMIT 1	//速度制限

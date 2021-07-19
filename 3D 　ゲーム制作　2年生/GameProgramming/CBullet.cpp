@@ -55,6 +55,8 @@ void CBullet::Collision(CCollider *m, CCollider *o){
 		}
 	}
 
+	
+
 	//ƒRƒ‰ƒCƒ_‚Ìm‚Æo‚ªÕ“Ë‚µ‚Ä‚¢‚é‚©”»’è
 	if (CCollider::Collision(m, o)){
 		//Õ“Ë‚µ‚½‚ç–³Œø

@@ -251,7 +251,7 @@ void CEnemy::Update(){
 		mHp--;
 		if (mHp % 25 == 0){
 			//エフェクト生成
-			new CEffect(mPosition, 2.0f, 2.0f, "exp.tga", 4, 4, 2);
+			new CEffect(mPosition, 8.0f, 8.0f, "exp.tga", 4, 4, 2);
 		}
 	}
 	CTransform::Update();	//行列更新
