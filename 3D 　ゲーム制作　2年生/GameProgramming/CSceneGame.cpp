@@ -84,7 +84,7 @@ void CSceneGame::Init() {
 	mPlayer.mRotation = CVector(0.0f, 0.0f, 0.0f);
 
 	new CEnemy(CVector(5.0f, 1.0f, 50.0f) * mBackGroundMatrix,
-		CVector(0.0f,0.0f,0.0f),
+		CVector(0.0f,180.0f,0.0f),
 		CVector(0.7f, 0.7f, 0.7f));
 
 	new CPillar(&mPillar,

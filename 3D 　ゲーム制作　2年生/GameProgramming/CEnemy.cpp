@@ -12,11 +12,11 @@
 #define VELOCITYZ 0.5f	//Z速度
 #define GLAVITY -0.02f //重力
 
-#define JUMPPOWER 0.5f	//ジャンプ力
+#define JUMPPOWER 0.7f	//ジャンプ力
 
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 250
+#define BULLETTORTALNUM 450
 #define RELOAD 320
 
 #define EHP 150	//耐久値
@@ -133,7 +133,7 @@ void CEnemy::Update(){
 
 		//ジャンプ
 		if (mEJump == true && r == 40){
-			mMoveSpeedY += JUMPPOWER;
+			mMoveSpeedY = JUMPPOWER;
 			EnemyJump.Play();
 			mEJump = false;
 		}
@@ -193,7 +193,7 @@ void CEnemy::Update(){
 									CBullet *bullet = new CBullet();
 									bullet->mTag = CCharacter::EBULLETENEMY;
 									bullet->Set(0.5f, 2.5f);
-									bullet->mPosition = CVector(-3.0f, 2.5f, 13.0f) * mMatrix;
+									bullet->mPosition = CVector(-3.0f, 2.5f, 10.0f) * mMatrix;
 									bullet->mRotation = mRotation;
 									bullet->Update();
 									EnemyFire.Play();

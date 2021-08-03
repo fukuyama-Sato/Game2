@@ -10,7 +10,7 @@
 #include"CSound.h"
 
 #define GLAVITY -0.02f //重力
-#define JUMPPOWER 1.0f	//ジャンプ力
+#define JUMPPOWER 0.7f	//ジャンプ力
 #define JUMPRECHARGE 70	//次ジャンプまでの待ち時間
 
 #define STEPSPEED 2
@@ -24,7 +24,7 @@
 
 #define FIRERATE 6	//攻撃の連射速度
 #define BULLETNUMBER 50	//装弾数
-#define BULLETTORTALNUM 250
+#define BULLETTORTALNUM 350
 #define RELOAD 320
 
 #define PHP 150	//HP
