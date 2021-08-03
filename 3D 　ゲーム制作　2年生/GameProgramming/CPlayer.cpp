@@ -217,8 +217,10 @@ void CPlayer::Update(){
 	//SE
 	if (mPlayerHp == 50)Caution.Repeat();
 	if (mPlayerHp == 50)Damage.Play();
-	if (mPlayerHp == 0)HP0.Play();
-
+	if (mPlayerHp == 0){
+		HP0.Play();
+		mPlayerHp--;
+	}
 	//ˆÊ’u‚ÌˆÚ“®
 	mPosition = CVector(mSpeedX,0.0f,mSpeedZ) * mMatrix;
 

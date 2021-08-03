@@ -76,7 +76,7 @@ void CSceneGame::Init() {
 	CMatrix matrix;
 	matrix.Print();
 
-	mBackGroundMatrix.Translate(0.0f, -2.0f, -500.0f);
+	mBackGroundMatrix.Translate(0.0f, -2.0f, 500.0f);
 
 	mPlayer.mpModel = &mModel;
 	mPlayer.mScale = CVector(0.7f, 0.7f, 0.7f);
