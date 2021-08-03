@@ -36,21 +36,6 @@ void CSphere::Collision(CCollider *m, CCollider *o){
 		return;
 	}
 
-	//自分がサーチ用の時
-	if (m->mTag == CCollider::ESEARCH){
-		//相手が球コライダ
-		if (o->mType == CCollider::ESPHERE){
-			if (o->mpParent->mTag == EPLAYER){
-				//衝突中
-				if (CCollider::Collision(m, o)){
-					//プレイヤーのポインタ設定
-					mpPlayer = o->mpParent;
-				}
-			}
-		}
-		return;
-	}
-
 	//相手のコライダタイプの判定
 	switch (o->mType){
 	case CCollider::ESPHERE: //球コライダ

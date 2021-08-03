@@ -24,6 +24,9 @@
 
 CVector mEye;
 
+CSound Hit;
+CSound Damage;
+CSound Caution;
 CSound HP0;
 
 CSound Reload;
@@ -33,7 +36,6 @@ CSound Jump;
 
 CSound EnemyFire;
 CSound EnemyJump;
-
 
 //CSound Bgm;
 
@@ -53,11 +55,14 @@ void CSceneGame::Init() {
 	mModel.Load("Character.obj", "Character.mtl");
 	mPillar.Load("Pillar.obj","Pillar.mtl");
 	mBarricade.Load("barricade.obj", "barricade.mtl");
-	mBackGround.Load("stage.obj", "stage2.mtl");
+	mBackGround.Load("stage.obj", "stage.mtl");
 
 	//wav読み込み
 	//Bgm.Load(".wav");
 
+	Hit.Load("Hit.wav");
+	Damage.Load("Damaged.wav");
+	Caution.Load("Caution.wav");
 	HP0.Load("HP0.wav");
 
 	Fire.Load("Fire.wav");
@@ -75,11 +80,11 @@ void CSceneGame::Init() {
 
 	mPlayer.mpModel = &mModel;
 	mPlayer.mScale = CVector(0.7f, 0.7f, 0.7f);
-	mPlayer.mPosition = CVector(0.0f, 5.0f, -3.0f) * mBackGroundMatrix;
+	mPlayer.mPosition = CVector(0.0f, 5.0f, -60.0f) * mBackGroundMatrix;
 	mPlayer.mRotation = CVector(0.0f, 0.0f, 0.0f);
 
-	new CEnemy(CVector(5.0f, 1.0f, -50.0f) * mBackGroundMatrix,
-		CVector(0.0f,0.0f,0.0f), 
+	new CEnemy(CVector(5.0f, 1.0f, 50.0f) * mBackGroundMatrix,
+		CVector(0.0f,0.0f,0.0f),
 		CVector(0.7f, 0.7f, 0.7f));
 
 	new CPillar(&mPillar,
@@ -93,14 +98,19 @@ void CSceneGame::Init() {
 		CVector(2.0f, 10.0f, 2.0f));
 
 	new CBarricade(&mBarricade,
-		CVector(-50.0f, 0.0f, -10.0f) * mBackGroundMatrix,
-		CVector(0.0f, 90.0f, 0.0f),
-		CVector(1.0f, 2.0f, 1.0f));
+		CVector(-40.0f, 0.0f, -20.0f) * mBackGroundMatrix,
+		CVector(0.0f, 50.0f, 0.0f),
+		CVector(3.0f, 2.0f, 1.0f));
 
 	new CBarricade(&mBarricade,
 		CVector(50.0f, 0.0f, 0.0f) * mBackGroundMatrix,
 		CVector(),
 		CVector(4.5f, 4.0f, 4.0f));
+
+	new CBarricade(&mBarricade,
+		CVector(-70.0f, 0.0f, 40.0f) * mBackGroundMatrix,
+		CVector(0.0f, 90.0f, 0.0f),
+		CVector(4.5f, 8.0f, 4.0f));
 
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列は無し
@@ -164,7 +174,7 @@ void CSceneGame::Update() {
 		mCamY = 5.0f;
 		mFcamX = -5.0f;
 		mFcamY = 2.0f;
-		if (CKey::Push(VK_RBUTTON) && mCamZ < 9){
+		if (CKey::Push(VK_RBUTTON) && mCamZ < 6){
 			mCamZ += 0.4f;
 		}
 		else if (mCamZ > -10){
@@ -183,11 +193,6 @@ void CSceneGame::Update() {
 	Camera.Set(e, c, u);
 	Camera.Render();
 
-	//クリア条件
-	//if (CEnemy::mHp <= 0){
-
-	//}
-
 	mBackGround.Render(mBackGroundMatrix);
 
 	//タスクリストの削除
@@ -195,5 +200,5 @@ void CSceneGame::Update() {
 	//描画
 	CTaskManager::Get()->Render();
 
-	CCollisionManager::Get()->Render();
+	//CCollisionManager::Get()->Render();
 }

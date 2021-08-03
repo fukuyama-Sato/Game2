@@ -4,16 +4,21 @@
 #include"CCharacter.h"
 //弾クラスのインクルード
 #include"CBullet.h"
+#include"CTaskManager.h"
 #include"CColliderLine.h"
 #include"CColliderTriangle.h"
 #include"CEffect.h"
 #include"CEnemy.h"
+
 /*プレイヤークラス
 　キャラクタクラスを継承*/
 class CPlayer : public CCharacter{
 private:
 	bool mJump;
 	int mJumpTimer;
+
+	bool mStep;
+	int mStepTimer;
 
 	int mFireRate;	//連射速度
 	int mBulletTortalNum;
@@ -32,7 +37,7 @@ private:
 
 public:
 
-	int mPlayerHp;	//体力
+	static int mPlayerHp;	//体力
 
 	CColliderLine mLine; //線分コライダ
 	CColliderLine mLine2; //線分コライダ
@@ -40,7 +45,6 @@ public:
 	CColliderLine mLine4; //線分コライダ
 	CColliderLine mLine5; //線分コライダ
 	CCollider mCollider; //本体用コライダ
-	//CColliderTriangle mTriangleCol;
 
 	CPlayer();
 	//更新処理

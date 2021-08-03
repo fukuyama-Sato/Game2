@@ -5,6 +5,7 @@
 //三角形クラスのインクルード
 #include"CTriangle.h"
 #include"CCollider.h"
+#include"CColliderLine.h"
 
 /*弾クラス
  三角形を飛ばす*/
@@ -12,6 +13,9 @@ class CBullet : public CCharacter{
 public:
 	//三角形
 	CTriangle mT;
+	CTriangle mT2;
+	CTriangle mT3;
+	CTriangle mT4;
 
 	//生存時間
 	int mLife;

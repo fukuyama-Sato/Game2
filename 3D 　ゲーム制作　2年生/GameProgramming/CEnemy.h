@@ -11,8 +11,7 @@
 class CEnemy : public CCharacter{
 private:
 	int mEFireRate;	//連射速度
-	int mEBulletTortalNum;
-	int mEBulletNum;
+	
 	int mEReloadTime;
 
 	bool mEJump;
@@ -29,6 +28,8 @@ private:
 public:
 
 	static int mHp;	//ヒットポイント
+	static int mEBulletTortalNum;
+	static int mEBulletNum;
 	//モデルデータ
 	static CModel mModel;
 	//目標地点
@@ -48,8 +49,6 @@ public:
 	//CEnemy(位置,回転,拡張)
 	CEnemy(const CVector& position, const CVector& rotation,
 		const CVector& scale);
-
-	void Move();
 
 	//更新処理
 	void Update();
